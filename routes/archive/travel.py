@@ -1,0 +1,1 @@
+# Travelogue 페이지 라우트; /ko/archive/travel/ 처리

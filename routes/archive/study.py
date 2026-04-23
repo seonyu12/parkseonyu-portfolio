@@ -1,0 +1,1 @@
+# Study 페이지 라우트; /ko/archive/study/ 처리

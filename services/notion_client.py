@@ -1,0 +1,1 @@
+ # Notion API와 연결하는 파일; Notion 토큰과 DB ID를 사용

@@ -1,0 +1,1 @@
+# Home, About, Identity, Contact 같은 고정 소개 페이지 라우트

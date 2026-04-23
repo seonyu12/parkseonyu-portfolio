@@ -1,0 +1,5 @@
+# Flask, notion-client 등 프로젝트 실행에 필요한 Python 패키지 목록
+Flask
+gunicorn
+python-dotenv
+requests
