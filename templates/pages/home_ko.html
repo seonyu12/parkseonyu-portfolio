@@ -1,0 +1,22 @@
+<!-- ============================================ -->
+<!-- home_ko.html                                  -->
+<!-- 실제 한국어 홈 페이지.                          -->
+<!-- base.html의 틀을 빌려쓰고 content 블록 안의 내용만 채운다 -->
+<!-- ============================================ -->
+
+<!-- extends "base.html" 는 "이 페이지는 base.html을 상속받는다"는 선언 -->
+<!-- 반드시 파일 맨 첫 줄에 와야 한다 -->
+{% extends "base.html" %}
+
+<!-- head.html에 있던 title 블록을 이 페이지만의 제목으로 덮어쓴다 -->
+<!-- (기본값 "박선유" 대신 "박선유 — Home"으로 바뀜) -->
+{% block title %}박선유 — Home{% endblock %}
+
+<!-- base.html의 블록 content endblock %} 빈 칸을 -->
+<!-- 아래 내용으로 채워 넣는다 -->
+{% block content %}
+<section>
+  <h1>Hello.</h1>
+  <p>Portfolio site is coming soon.</p>
+</section>
+{% endblock %}

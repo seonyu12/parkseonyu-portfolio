@@ -1,0 +1,37 @@
+<!-- ============================================ -->
+<!-- base.html                                     -->
+<!-- 모든 페이지가 공통으로 상속받는 "뼈대" 파일     -->
+<!-- 이 파일 자체는 화면에 직접 안 뜨고,             -->
+<!-- home_ko.html 같은 자식 페이지들이 이 틀을 빌려서 쓴다 -->
+<!-- ============================================ -->
+
+<!DOCTYPE html>
+
+<!-- lang="{{ lang }}" 는 이 페이지의 언어가 뭔지 브라우저/검색엔진/스크린리더에 알려주는 표준 속성 -->
+<!-- {{ lang }} 자리에는 라우트에서 render_template()에 넘겨준 lang 값("ko" 등)이 그대로 들어간다 -->
+<html lang="{{ lang }}">
+<head>
+  <!--  include '경로'  는 다른 html 파일의 내용을 이 자리에 통째로 복사해서 붙여넣는 문법 -->
+  <!-- head.html 안의 <meta>, <title>, <link> 태그들이 이 자리에 그대로 삽입된다 -->
+  {% include 'partials/layout/head.html' %}
+</head>
+<body>
+
+  <!-- header.html 내용을 여기 삽입 (로고 + 메뉴) -->
+  {% include 'partials/layout/header.html' %}
+
+  <main>
+    <!-- 블록 content  endblock  는 "여기는 빈 칸이니 자식 페이지가 채워라"는 뜻 -->
+    <!-- home_ko.html에서  블록 content  ... endblock  이라고 쓰면 -->
+    <!-- 그 내용이 정확히 이 자리에 들어가서 완성된 페이지가 만들어진다 -->
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- lang_switcher.html 내용을 여기 삽입 (한국어/Eng/日本語 버튼) -->
+  {% include 'partials/layout/lang_switcher.html' %}
+
+  <!-- footer.html 내용을 여기 삽입 -->
+  {% include 'partials/layout/footer.html' %}
+
+</body>
+</html>

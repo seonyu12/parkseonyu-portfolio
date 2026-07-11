@@ -1,0 +1,15 @@
+<!-- works/index.html: Works 목록 페이지 -->
+{% extends "base.html" %}
+{% block title %}박선유 — Works{% endblock %}
+{% block content %}
+<section>
+  <h1>Works</h1>
+  <!-- works 라는 리스트를 하나씩 순회하면서 카드처럼 출력한다 (Jinja의 반복문 문법) -->
+  {% for w in works %}
+  <div class="work-card">
+    <h2><a href="/works/{{ w.slug }}/">{{ w.title }}</a></h2>
+    <p>{{ w.desc }}</p>
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

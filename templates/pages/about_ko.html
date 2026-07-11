@@ -1,0 +1,14 @@
+<!-- about_ko.html: 한국어 About 페이지. base.html 상속받아서 content 블록만 채운다 -->
+<!-- extends "base.html" 로 부모 템플릿을 상속받는다는 선언 (반드시 파일 첫 줄) -->
+{% extends "base.html" %}
+
+<!-- title 블록을 이 페이지 전용 제목으로 덮어쓴다 -->
+{% block title %}박선유 — About{% endblock %}
+
+<!-- base.html의 빈 칸(content 블록)을 아래 내용으로 채운다 -->
+{% block content %}
+<section>
+  <h1>About</h1>
+  <p>자기소개 내용이 들어갈 자리입니다.</p>
+</section>
+{% endblock %}

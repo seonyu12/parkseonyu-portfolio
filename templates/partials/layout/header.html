@@ -1,0 +1,25 @@
+<!-- ============================================ -->
+<!-- header.html                                   -->
+<!-- 모든 페이지 상단에 공통으로 뜨는 로고 + 메뉴     -->
+<!-- ============================================ -->
+
+<header class="site-header">
+
+    <!-- 로고 역할을 하는 링크. 클릭하면 지금 언어의 홈으로 이동 -->
+    <a href="/{{ lang }}/" class="logo">박선유</a>
+  
+    <nav>
+      <!-- Identity, About, Contact는 pages_bp에서 언어를 받는 구조라 lang을 붙인다 -->
+      <a href="/{{ lang }}/identity">Identity</a>
+      <a href="/{{ lang }}/about">About</a>
+
+      <!-- Works, Archive는 아직 언어별 라우팅 전이라 (url_prefix에 lang이 없음) -->
+      <!-- lang을 붙이지 않고 그냥 /works/, /archive/ 로 이동한다 -->
+      <!-- Stage 9에서 Works/Archive도 언어별 라우팅이 추가되면 이 부분도 함께 수정할 예정 -->
+      <a href="/works/">Works</a>
+      <a href="/archive/">Archive</a>
+
+      <a href="/{{ lang }}/contact">Contact</a>
+    </nav>
+  
+  </header>

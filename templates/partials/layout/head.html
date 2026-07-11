@@ -1,0 +1,49 @@
+<!-- ============================================ -->
+<!-- head.html                                     -->
+<!-- 모든 페이지의 <head> 태그 안에 공통으로 들어갈 내용 -->
+<!-- base.html이 이 파일을 통째로 자기 <head> 안에 끼워 넣는다 -->
+<!-- ============================================ -->
+
+<!-- 문자 인코딩을 UTF-8로 지정. 한글이 깨지지 않게 하려면 반드시 필요 -->
+<meta charset="UTF-8">
+
+<!-- 모바일 화면에서 화면 크기에 맞게 자동으로 조정되도록 하는 필수 태그 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- 브라우저 탭에 표시되는 제목 -->
+<!--  block title 박선유endblock  는 Jinja 템플릿 블록 문법 -->
+<!-- "title"이라는 이름의 빈 칸을 만들고 기본값으로 '박선유'를 넣어둔다 -->
+<!-- 자식 페이지에서 이 블록을 다시 쓰면 그 페이지만 제목이 바뀐다 -->
+<title>{% block title %}박선유{% endblock %}</title>
+
+<!-- ============================================ -->
+<!-- CSS 파일 연결 부분                              -->
+<!-- style.css 하나로 안 몰고, 이미 목적별로 나눠둔 -->
+<!-- 여러 CSS 파일을 각각 순서대로 불러온다           -->
+<!-- 순서가 중요한 이유: 뒤에 불러온 CSS가 앞의 CSS를 -->
+<!-- 덮어쓸 수 있기 때문에, "기반이 되는 것부터 → -->
+<!-- 구체적인 것 순서"로 불러와야 예상대로 스타일이 적용된다 -->
+<!-- ============================================ -->
+
+<!-- {{ url_for('static', filename='경로') }} 는 -->
+<!-- "static 폴더 안 해당 경로의 파일 위치를 Flask가 자동으로 계산해줘"라는 뜻 -->
+
+<!-- 1. 초기화(reset) 먼저: 브라우저 기본 스타일 없애기 -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/global/reset.css') }}">
+
+<!-- 2. 변수(variables): 색상, 간격 등 재사용할 값 정의 (지금은 빈 파일) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/global/variables.css') }}">
+
+<!-- 3. 타이포그래피(typography): 글자 관련 기본 스타일 -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/global/typography.css') }}">
+
+<!-- 4. 공통(common): 여러 곳에서 재사용하는 유틸리티 클래스 (지금은 빈 파일) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/global/common.css') }}">
+
+<!-- 5. 헤더(header) 전용 스타일 (지금은 빈 파일) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/layout/header.css') }}">
+
+<!-- 6. 푸터(footer) 전용 스타일 (지금은 빈 파일) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/layout/footer.css') }}">
+
+<!-- 7. 언어 전환
