@@ -266,17 +266,26 @@ document.addEventListener("DOMContentLoaded", function () {
   stage.addEventListener("mouseleave", clearSpot);
 
   // 터치 기기에서는 손가락으로 무대 위를 훑으면 같은 방식으로
-  // 손전등이 따라다니게 한다
+  // 손전등이 따라다니게 한다. { passive: true }로 두면 브라우저가
+  // "이 터치가 스크롤인지 게임 조작인지" 판단할 때 기본 동작(페이지
+  // 스크롤)을 막지 않아서, 손가락으로 무대를 훑는 순간 손전등이
+  // 움직이는 대신 화면이 스크롤 스냅으로 다음 섹션까지 넘어가버리는
+  // 문제가 있었다. passive:false + preventDefault로 무대 위에서
+  // 손가락을 움직이는 동안만 페이지 스크롤을 막아, 손전등 조작이
+  // 스크롤과 충돌하지 않게 한다(무대는 이미 화면 전체를 덮고 있어서,
+  // 이 구간에서 스크롤을 잠깐 막아도 사용자가 원래 하려던 "숨은
+  // 캐릭터 찾기"에는 지장이 없다)
   stage.addEventListener(
     "touchmove",
     function (event) {
       const touch = event.touches[0];
 
       if (touch) {
+        event.preventDefault();
         setSpot(touch.clientX, touch.clientY);
       }
     },
-    { passive: true },
+    { passive: false },
   );
 
   stage.addEventListener("touchend", clearSpot);

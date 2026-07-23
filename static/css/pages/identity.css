@@ -1313,6 +1313,20 @@ html:lang(ja) .body-text {
 
     text-overflow: ellipsis;
   }
+
+  /* 위쪽(838번째 줄 부근)의 html:lang(en)/html:lang(ja) .body-text
+     규칙은 데스크톱에서 영어 본문이 너무 많이 줄바꿈되는 문제를
+     막으려고 폰트를 꽤 작게(0.85~1rem) 줄여둔 것이었는데, 그 값을
+     모바일 좁은 화면에도 그대로 쓰면 이미 작은 화면에서 글자가
+     더 작아져(clamp의 vw 기반 선호값이 모바일에서는 최소값보다도
+     작아짐) 가독성이 떨어진다. 모바일에서는 대신 한국어와 비슷한
+     수준의 읽기 편한 크기로 다시 키운다(이 규칙이 위 규칙보다
+     파일 아래쪽에 있어서 같은 우선순위일 때 이 값이 이긴다) */
+  html:lang(en) .body-text,
+  html:lang(ja) .body-text {
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
 }
 
 /* prefers-reduced-motion은 사용자가 자기 운영체제 설정에서 */
@@ -2152,6 +2166,30 @@ html:lang(ja) .body-text {
 
     min-height: 260px;
   }
+
+  /* 접기/닫기/전체보기처럼 손가락으로 눌러야 하는 작은 버튼들은
+     데스크톱 기준 패딩만으로는 터치 타겟이 다소 좁을 수 있어서,
+     모바일에서는 위아래 패딩을 넉넉히 늘려 누르기 편하게 한다 */
+  .pursue-collapse {
+    padding: 10px 18px;
+  }
+
+  .pursue-close {
+    padding: 11px 22px;
+  }
+
+  .pursue-viewall {
+    padding: 13px 28px;
+  }
+
+  /* 카드 배지(원형)가 좁은 화면에서 카드 폭에 비해 과하게 크지
+     않도록 살짝 줄인다 */
+  .pursue-card-badge {
+    width: 68px;
+    height: 68px;
+
+    font-size: 0.85rem;
+  }
 }
 
 /* ============================================================ */
@@ -2807,5 +2845,37 @@ html:lang(ja) .body-text {
     min-height: 200px;
 
     padding: 22px 24px;
+  }
+
+  /* skip/닫기 버튼과 팝업 닫기(×)는 좁은 화면일수록 손가락으로
+     정확히 누르기 어려우니, 터치 타겟을 넉넉히 키운다 */
+  .focus-skip {
+    padding: 10px 20px;
+  }
+
+  .focus-close {
+    padding: 11px 24px;
+  }
+
+  .focus-detail-close {
+    /* 글자(×) 자체는 그대로 두고, 최소 44px 정사각형 히트 영역을
+       확보해서 좁은 화면에서도 정확히 누를 수 있게 한다 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 44px;
+    min-height: 44px;
+
+    top: 0;
+    right: 0;
+  }
+
+  .focus-eyebrow {
+    font-size: clamp(1.4rem, 6vw, 1.9rem);
+  }
+
+  .focus-card-badge {
+    font-size: 0.92rem;
   }
 }
