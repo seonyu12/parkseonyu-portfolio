@@ -1,0 +1,19 @@
+<!-- reading.html: Reading 목록 페이지 -->
+<!-- base.html을 상속받는다 -->
+{% extends "base.html" %}
+{% block title %}박선유 — Reading{% endblock %}
+{% block content %}
+<section>
+  <h1>Reading</h1>
+  <!-- readings 리스트를 하나씩 순회하면서 카드처럼 출력한다 (Jinja 반복문) -->
+  <!-- readings는 Flask 라우트에서 넘겨준 리스트(배열)이고, r은 그 안의 항목 하나하나를 가리키는 임시 이름이다 -->
+  {% for r in readings %}
+  <div class="reading-card">
+    <!-- r.slug는 주소창에 쓰이는 URL용 짧은 식별자(예: some-book-title) -->
+    <h2><a href="/archive/reading/{{ r.slug }}/">{{ r.title }}</a></h2>
+    <p>{{ r.author }}</p>
+  </div>
+  <!-- 반복문은 반드시 endfor로 닫아줘야 한다 -->
+  {% endfor %}
+</section>
+{% endblock %}

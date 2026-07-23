@@ -1,0 +1,21 @@
+<!--
+  placeholder: "Content & Making" 키워드에 대응하는 숨은 캐릭터.
+  간단한 도형 임시 그림 — 나중에 실제 캐릭터 일러스트로 교체 가능
+  (파일명 focus-character-3.svg만 유지하면 됨).
+-->
+<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="42" r="28" fill="#8fa998" />
+  <path
+    d="M26 136 C26 96 40 78 60 78 C80 78 94 96 94 136 Z"
+    fill="#8fa998"
+  />
+  <circle cx="49" cy="40" r="4.5" fill="#302a21" />
+  <circle cx="71" cy="40" r="4.5" fill="#302a21" />
+  <path
+    d="M47 53 C53 62 67 62 73 53"
+    stroke="#302a21"
+    stroke-width="3.5"
+    stroke-linecap="round"
+    fill="none"
+  />
+</svg>

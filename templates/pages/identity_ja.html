@@ -1,0 +1,597 @@
+{% extends "base.html" %}
+{% block title %}パク・ソンユ — Identity{% endblock %}
+
+{% block page_css %}
+<!-- 레퍼런스 목업 속 손글씨 느낌의 둥글둥글한 폰트("Jua")를
+     아이덴티티 페이지에서만 불러온다. 일본어 버전도 같은 CSS 파일과
+     장식 폰트를 공유하고, 문장 길이/줄바꿈 방식 차이는 identity.css의
+     :lang(ja) 규칙으로 따로 보정한다 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+
+<!-- "What I focus on" 섹션 타이틀에 쓰는 세리프 이탤릭 장식 폰트.
+     레퍼런스 목업 속 손글씨 같은 기울어진 세리프 느낌을 재현한다 -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600;1,700&display=swap">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/identity.css') }}">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- identity-scene: 이 페이지 인터랙션 전체를 감싸는 최상위 섹션. -->
+<!-- 아래 identity-stage(3D 연출 무대)와 identity-body(스크롤 후 본문) 두 부분으로 나뉜다 -->
+<section id="identity-scene" class="identity-scene" aria-label="アイデンティティ・インタラクティブイントロ">
+  <!-- identity-stage: 하늘/구름/비/해/무지개 연출이 실제로 벌어지는 무대(고정 영역) -->
+  <div id="identity-stage" class="identity-stage">
+    <!-- identity-sky: 배경 하늘. day(맑음)와 storm(먹구름) 두 레이어를 겹쳐두고 -->
+    <!-- JS(identity_cloud_scene.js)가 시간에 따라 투명도를 조절해 날씨가 바뀌는 것처럼 보이게 한다 -->
+    <div class="identity-sky" aria-hidden="true">
+      <div class="identity-sky-day"></div>
+      <div class="identity-sky-storm"></div>
+    </div>
+
+    <!-- cloud-3d-mount: Three.js가 3D 구름 장면을 그려 넣을 빈 그릇(mount point). -->
+    <!-- data-base-model/data-hero-model 속성에 담긴 .glb 파일 경로를 JS가 읽어서 3D 모델을 불러온다 -->
+    <div
+      id="cloud-3d-mount"
+      class="cloud-3d-mount"
+      data-base-model="{{ url_for('static', filename='models/identity/cloud_base.glb') }}"
+      data-hero-model="{{ url_for('static', filename='models/identity/cloud_hero.glb') }}"
+      aria-hidden="true"
+    ></div>
+
+    <!-- weather-rain-canvas: 빗방울 애니메이션을 그리는 2D canvas (JS가 여기에 그림을 그린다) -->
+    <canvas
+      id="weather-rain-canvas"
+      class="weather-rain-canvas"
+      aria-hidden="true"
+    ></canvas>
+
+    <!-- text-rain-layer: 본문 글자가 비처럼 떨어지는 연출을 위해 JS가 글자 요소들을 채워 넣는 자리 -->
+    <div
+      id="text-rain-layer"
+      class="text-rain-layer"
+      aria-hidden="true"
+    ></div>
+
+    <p
+      id="identity-hint"
+      class="identity-hint"
+      role="status"
+    >
+      雲を読み込み中です
+    </p>
+
+    <button
+      id="identity-skip"
+      class="identity-skip"
+      type="button"
+      aria-label="イントロをスキップ"
+    >
+      スキップ <span aria-hidden="true">→</span>
+    </button>
+
+    <p
+      id="identity-status"
+      class="visually-hidden"
+      aria-live="polite"
+    ></p>
+  </div>
+
+  <!-- identity-final-weather(해/무지개/타이틀)는 #identity-stage
+       밖으로 뺐다. stage는 overflow:hidden이 걸려 있어서, 그 안에
+       두면 CSS에서 position:fixed를 줘도 stage 박스가 스크롤로
+       화면 밖으로 나가는 순간 같이 잘려서 사라져버린다. #identity-scene의
+       직속 자식으로 옮겨야 스크롤해도 진짜로 화면에 계속 떠 있는다 -->
+  <div class="identity-final-weather" aria-hidden="true">
+    <!-- 해 사진: static/img/identity/sun-reveal.png 파일을
+         원하는 이미지로 바꿔치기만 하면 됨. 이제 화면 오른쪽 위
+         구석에 배치한다 (레퍼런스 목업 기준) -->
+    <img
+      id="identity-sun-photo"
+      class="identity-sun-photo"
+      src="{{ url_for('static', filename='img/identity/sun-reveal.png') }}"
+      alt=""
+    >
+
+    <!-- 무지개는 이제 화면 전체를 가로지르지 않고, 화면 왼쪽 아래
+         구석에서 시작해 위로 살짝 걸쳐 올라오는 형태로 배치한다.
+         타이틀은 더 이상 무지개 곡선을 따라가지 않고, 독립된
+         일반 텍스트(아래 identity-title-cluster)로 표시한다 -->
+    <div class="identity-rainbow-wrap">
+      <!-- 무지개 사진: static/img/identity/rainbow.png -->
+      <img
+        id="identity-rainbow-photo"
+        class="identity-rainbow-photo"
+        src="{{ url_for('static', filename='img/identity/rainbow.png') }}"
+        alt=""
+      >
+    </div>
+
+    <!-- 타이틀 + 반짝이 장식. 일본어는 띄어쓰기가 없어서 어디서든
+         자연스럽게 줄바꿈되므로, identity.css의 :lang(ja) 규칙에서
+         강제 한 줄(nowrap) 대신 자유 줄바꿈을 허용한다 -->
+    <div class="identity-title-cluster">
+      <!-- 반짝이(별) 장식 두 개. 그림 파일 없이 SVG로 직접 그린
+           간단한 4방향 별 모양이라 색만 바꿔도 다시 그려진다 -->
+      <svg
+        class="identity-sparkle identity-sparkle--main"
+        viewBox="0 0 40 40"
+        aria-hidden="true"
+      >
+        <path
+          d="M20 2 C20 12 12 20 2 20 C12 20 20 28 20 38 C20 28 28 20 38 20 C28 20 20 12 20 2 Z"
+          fill="currentColor"
+        ></path>
+      </svg>
+
+      <svg
+        class="identity-sparkle identity-sparkle--cluster-a"
+        viewBox="0 0 40 40"
+        aria-hidden="true"
+      >
+        <path
+          d="M20 2 C20 12 12 20 2 20 C12 20 20 28 20 38 C20 28 28 20 38 20 C28 20 20 12 20 2 Z"
+          fill="currentColor"
+        ></path>
+      </svg>
+
+      <svg
+        class="identity-sparkle identity-sparkle--cluster-b"
+        viewBox="0 0 40 40"
+        aria-hidden="true"
+      >
+        <path
+          d="M20 2 C20 12 12 20 2 20 C12 20 20 28 20 38 C20 28 28 20 38 20 C28 20 20 12 20 2 Z"
+          fill="currentColor"
+        ></path>
+      </svg>
+
+      <!-- 실제 타이틀 h1. 예전엔 스크린리더용으로만 숨겨두고
+           SVG 곡선 텍스트를 시각적으로 보여줬는데, 이제 곡선을
+           안 쓰니 이 h1 자체가 화면에 보이는 진짜 타이틀이다 -->
+      <h1
+        id="identity-final-title"
+        class="identity-title-heading"
+      >
+        何にでもなれると信じて、想像を現実に
+      </h1>
+    </div>
+  </div>
+
+  <article
+    id="identity-body"
+    class="identity-body"
+    aria-labelledby="identity-final-title"
+  >
+    <div class="identity-copy-inner">
+      <!-- "IDENTITY" 라벨(eyebrow)은 사용자 요청으로 제거함.
+           진짜 타이틀(h1)은 위쪽 identity-final-weather 안,
+           무지개/반짝이 옆에 그대로 남아있다 -->
+
+      <div
+        id="identity-copy-prose"
+        class="identity-copy-prose"
+      >
+        <p class="body-text" data-rain-text>
+          学生時代の生活記録簿には「やりたいことが多すぎて夢がない」という一文が書かれていました。<br>
+          その言葉に囚われて悩んでいた時期もありました。
+        </p>
+
+        <p class="body-text" data-rain-text>
+          振り返ってみると、単に一つの名前で定義される人間にはなりたくなかったのだと思います。<br>
+          創作は分野を選びません。一つの型に縛られず、何でも作り出せる人になりたかったのです。
+        </p>
+
+        <p class="body-text" data-rain-text>
+          広い世界で限られた時間を生きる中で、一つのことだけをするには誘惑が多すぎます。<br>
+          世界はあまりに興味深く美しくて、想像することをやめられませんでした。
+        </p>
+
+        <p class="body-text" data-rain-text>
+          どうやら私は夢がない人間ではなく、やりたいことが多すぎる人間のようです。<br>
+          これからも、やりたいことがずっと生まれ続けたらいいなと思います。
+        </p>
+      </div>
+
+      <div
+        class="identity-scroll-cue"
+        aria-hidden="true"
+      >
+        <span>SCROLL</span>
+        <span class="identity-scroll-line"></span>
+      </div>
+    </div>
+  </article>
+</section>
+
+<!-- ============================================ -->
+<!-- identity-pursue: "What I pursue" 섹션.               -->
+<!-- 한국어(identity_ko.html) 원본과 완전히 같은 구조/ID이며   -->
+<!-- 텍스트만 일본어로 옮겼다. -->
+<!-- ============================================ -->
+<section id="identity-pursue" class="identity-pursue" aria-label="追求する価値">
+  <div class="pursue-inner">
+    <p class="pursue-eyebrow">What I pursue</p>
+
+    <!-- pursue-scene: 조명 + 책 + 말풍선들이 모여있는 무대 -->
+    <div class="pursue-scene" id="pursue-scene">
+      <!-- 조명: 선(코드) + 갓(트래피조이드) + 전구. 순수 CSS 도형(border/border-radius)으로만 그린다 -->
+      <div class="pursue-lamp" aria-hidden="true">
+        <span class="pursue-lamp-cord"></span>
+        <span class="pursue-lamp-shade"></span>
+        <span class="pursue-lamp-bulb"></span>
+        <span class="pursue-lamp-glow"></span>
+      </div>
+
+      <!-- 책: 마우스를 올리기만 해도(hover) 말풍선 4개가 잠깐 나타난다.
+           클릭하면 마우스를 치워도 계속 펼쳐진 채로 고정되고(터치
+           기기 대응), 그럴 땐 아래 "닫기" 버튼으로 다시 접을 수 있다 -->
+      <button
+        type="button"
+        id="pursue-book-trigger"
+        class="pursue-book"
+        aria-expanded="false"
+        aria-controls="pursue-bubbles"
+      >
+        <span class="pursue-book-cover" aria-hidden="true">
+          <span class="pursue-book-spine"></span>
+          <span class="pursue-book-pages"></span>
+        </span>
+        <span class="visually-hidden">追求している価値を開く</span>
+      </button>
+
+      <!-- 접기 버튼: 책을 클릭해서 말풍선을 고정으로 펼쳐뒀을 때만
+           나타난다(JS가 is-open 상태에 맞춰 보이기/숨기기 처리).
+           누르면 고정을 풀고 말풍선을 다시 숨긴다 -->
+      <button
+        type="button"
+        id="pursue-collapse"
+        class="pursue-collapse"
+      >
+        閉じる <span aria-hidden="true">×</span>
+      </button>
+
+      <!-- 말풍선 4개는 제목만 보여주는 "미리보기" 역할만 한다.
+           기본은 숨겨져 있다가, 책에 마우스를 올리거나(:hover)
+           클릭해서 고정하면(.pursue-scene.is-open) 4개가 모두
+           나타난다. 안에 든 .pursue-bubble-detail 문단은 화면에
+           직접 보여주는 대신, 그 내용을 JS(identity_pursue.js)가
+           읽어서 아래 #pursue-detail(화면 중앙 고정 패널)에 채워
+           넣는 "원본 데이터" 역할만 한다 -->
+      <div
+        class="pursue-bubbles"
+        id="pursue-bubbles"
+      >
+        <div class="pursue-bubble pursue-bubble--a" tabindex="0">
+          <span class="pursue-bubble-title">親切さ</span>
+          <p class="pursue-bubble-detail">
+            アンデルセンの『北風と太陽』の物語で、旅人の上着を脱がせたのは強い風ではなく太陽の温かさだったというメッセージに深く感銘を受けました。
+            温かさは人の心を開き、自ら動く力を持っています。小さな不便や困難に目を配り、特に助けを必要とする人々の視点から問題を見つめる創作と実践を志向しています。
+            利便性を広げる発明やアクセシビリティを高めるデザインのように、配慮のこもった解決がより良い変化を生み出せると信じています。
+            温かさが染み込んだ成果物や行動が、この世界をより良い方向へ動かす方法を追求します。
+          </p>
+        </div>
+
+        <div class="pursue-bubble pursue-bubble--b" tabindex="0">
+          <span class="pursue-bubble-title">創造性</span>
+          <p class="pursue-bubble-detail">
+            （下書き）創造的なアイデアはイノベーションの出発点だと信じています。絶え間ない丁寧な観察を土台に、ごく小さなことの中にも新しい発見を見つけ出す探求を楽しみます。慣れ親しんだ結果に疑問を投げかけ、より良い方向を探して変化を生み出す方法を追求します。
+          </p>
+        </div>
+
+        <div class="pursue-bubble pursue-bubble--c" tabindex="0">
+          <span class="pursue-bubble-title">挑戦</span>
+          <p class="pursue-bubble-detail">
+            （下書き）絶え間なく新しい試みを続け、立ち止まらない姿勢を目指します。失敗は挫折ではなく、再挑戦するためのひらめきを得る瞬間だと信じています。不確実な結果を前にしてもためらわず、挑戦を楽しむ生き方を追求します。
+          </p>
+        </div>
+
+        <div class="pursue-bubble pursue-bubble--d" tabindex="0">
+          <span class="pursue-bubble-title">無限</span>
+          <p class="pursue-bubble-detail">
+            可能性に自ら限界を設けず、境界なく思考の範囲を広げる姿勢を目指します。
+            国や文化、時間の境界を越えて持続可能な価値を考えます。
+            変化する環境の中でも揺らがない基準と方向性を追求します。
+          </p>
+        </div>
+      </div>
+
+      <!-- 키워드 하나를 hover/focus했을 때 실제로 커지면서 나타나는
+           설명 패널. 항상 화면(무대) 정중앙에 고정된 자리에서
+           나타났다 사라지기만 할 뿐, 마우스를 따라 움직이지
+           않는다. 내용은 비어있다가 JS가 채워 넣는다 -->
+      <div
+        class="pursue-detail"
+        id="pursue-detail"
+        aria-hidden="true"
+      >
+        <span
+          class="pursue-detail-title"
+          id="pursue-detail-title"
+        ></span>
+        <p
+          class="pursue-detail-text"
+          id="pursue-detail-text"
+        ></p>
+      </div>
+    </div>
+
+    <!-- 처음엔 숨겨둔다(is-visible 없음). 말풍선 중 하나라도 한 번
+         마우스를 올리거나 포커스해서 설명을 확인하면, JS가
+         is-visible 클래스를 붙여서 이 버튼이 나타난다 -->
+    <button
+      type="button"
+      id="pursue-viewall"
+      class="pursue-viewall"
+    >
+      すべて見る
+    </button>
+  </div>
+
+  <!-- 전체보기 오버레이: "すべて見る" 버튼을 누르면 위 책/말풍선 장면 대신
+       4개 카드를 한 화면에 그리드로 보여준다. is-expanded 클래스가
+       identity-pursue에 붙으면 나타나고, "閉じる"를 누르면 다시 사라진다 -->
+  <div
+    class="pursue-expanded"
+    id="pursue-expanded"
+    aria-hidden="true"
+  >
+    <div class="pursue-expanded-header">
+      <span class="pursue-expanded-badge">What I pursue</span>
+
+      <button
+        type="button"
+        id="pursue-close"
+        class="pursue-close"
+      >
+        閉じる
+      </button>
+    </div>
+
+    <div class="pursue-grid">
+      <div class="pursue-card pursue-card--long">
+        <span class="pursue-card-badge">親切さ</span>
+        <p>
+          アンデルセンの『北風と太陽』の物語で、旅人の上着を脱がせたのは強い風ではなく太陽の温かさだったというメッセージに深く感銘を受けました。
+          温かさは人の心を開き、自ら動く力を持っています。小さな不便や困難に目を配り、特に助けを必要とする人々の視点から問題を見つめる創作と実践を志向しています。
+          利便性を広げる発明やアクセシビリティを高めるデザインのように、配慮のこもった解決がより良い変化を生み出せると信じています。
+          温かさが染み込んだ成果物や行動が、この世界をより良い方向へ動かす方法を追求します。
+        </p>
+      </div>
+
+      <div class="pursue-card">
+        <span class="pursue-card-badge">創造性</span>
+        <p>
+          （下書き）創造的なアイデアはイノベーションの出発点だと信じています。絶え間ない丁寧な観察を土台に、ごく小さなことの中にも新しい発見を見つけ出す探求を楽しみます。慣れ親しんだ結果に疑問を投げかけ、より良い方向を探して変化を生み出す方法を追求します。
+        </p>
+      </div>
+
+      <div class="pursue-card">
+        <span class="pursue-card-badge">挑戦</span>
+        <p>
+          （下書き）絶え間なく新しい試みを続け、立ち止まらない姿勢を目指します。失敗は挫折ではなく、再挑戦するためのひらめきを得る瞬間だと信じています。不確実な結果を前にしてもためらわず、挑戦を楽しむ生き方を追求します。
+        </p>
+      </div>
+
+      <div class="pursue-card">
+        <span class="pursue-card-badge">無限</span>
+        <p>
+          可能性に自ら限界を設けず、境界なく思考の範囲を広げる姿勢を目指します。
+          国や文化、時間の境界を越えて持続可能な価値を考えます。
+          変化する環境の中でも揺らがない基準と方向性を追求します。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- identity-focus: "What I focus on" 섹션. 한국어(identity_ko.html)
+     원본과 완전히 같은 구조/ID이며 텍스트만 일본어로 옮겼다 -->
+<section id="identity-focus" class="identity-focus" aria-label="集中していること">
+  <!-- focus-stage: 섹션 전체(화면 전체)를 덮는 숨바꼭질 무대다.
+       캐릭터 3개(+이스터에그 상어 1개)는 항상 그 자리에 있지만,
+       그 위를 덮은 안개(.focus-fog)가 평소엔 새까맣게 가려두고,
+       커서가 있는 자리만 둥글게 뚫려서(radial-gradient 마스크)
+       손전등처럼 보이게 한다 -->
+  <div class="focus-stage" id="focus-stage">
+      <div class="focus-hidden-layer">
+        <button
+          type="button"
+          class="focus-character"
+          id="focus-character-1"
+          style="left: 7%; top: 80%;"
+        >
+          <img
+            src="{{ url_for('static', filename='img/identity/focus-character-1.png') }}"
+            alt=""
+            aria-hidden="true"
+          >
+          <span class="focus-character-title visually-hidden">People &amp; Communication</span>
+          <p class="focus-character-detail visually-hidden">
+            人を理解し、つなげる過程を大切にしています。
+            異なる背景を持つ人々が互いにつながり、共に経験を作り上げる瞬間に大きな意味を感じます。
+          </p>
+          <span class="visually-hidden">隠れたキャラクターを探す：People &amp; Communication</span>
+        </button>
+
+        <button
+          type="button"
+          class="focus-character"
+          id="focus-character-2"
+          style="left: 91%; top: 14%;"
+        >
+          <img
+            src="{{ url_for('static', filename='img/identity/focus-character-2.png') }}"
+            alt=""
+            aria-hidden="true"
+          >
+          <span class="focus-character-title visually-hidden">Data &amp; Insight</span>
+          <p class="focus-character-detail visually-hidden">
+            データを通じて社会や現象の流れを客観的に見つめ、その中から意味のあるパターンや可能性を見出そうとしています。
+            分析は、より多くの価値を発見し、新しい視点を得るための私自身の観察ツールです。
+          </p>
+          <span class="visually-hidden">隠れたキャラクターを探す：Data &amp; Insight</span>
+        </button>
+
+        <button
+          type="button"
+          class="focus-character"
+          id="focus-character-3"
+          style="left: 89%; top: 84%;"
+        >
+          <img
+            src="{{ url_for('static', filename='img/identity/focus-character-3.png') }}"
+            alt=""
+            aria-hidden="true"
+          >
+          <span class="focus-character-title visually-hidden">Content &amp; Making</span>
+          <p class="focus-character-detail visually-hidden">
+            新しいアイデアを実体のある成果物として具現化し、日常に新たなインスピレーションを吹き込むことを目指しています。
+            私のすべての創作は記録から始まります。記録を通じて考えを具体化し、それを世界と共有しながら発展させていく過程を大切にしています。
+          </p>
+          <span class="visually-hidden">隠れたキャラクターを探す：Content &amp; Making</span>
+        </button>
+
+        <!-- 이스터에그: 진짜 키워드 캐릭터가 아니라 장난으로 숨겨둔
+             상어. 실수로 찾아서 커서를 대면 화면 밖으로 튀어나가는
+             척하는 애니메이션만 재생하고 사라진다 -->
+        <button
+          type="button"
+          class="focus-character focus-character--shark"
+          id="focus-shark"
+          style="left: 9%; top: 16%;"
+        >
+          <img
+            src="{{ url_for('static', filename='img/identity/focus-shark.png') }}"
+            alt=""
+            aria-hidden="true"
+          >
+          <span class="visually-hidden">あれ、これはサメだ（イースターエッグ）</span>
+        </button>
+      </div>
+
+      <div
+        class="focus-fog"
+        id="focus-fog"
+        aria-hidden="true"
+      ></div>
+  </div>
+
+  <!-- focus-inner: 무대(전체 화면) 위에 얹히는 오버레이.
+       타이틀/힌트/skip 버튼/상세패널은 안개보다 위에 있어야
+       항상 눌리고 읽혀야 하므로 여기서 z-index를 더 높게 준다 -->
+  <div class="focus-inner">
+    <p class="focus-eyebrow">What I focus on</p>
+
+    <!-- 캐릭터를 찾아서 커서를 대면(또는 눌러도) 여기에 키워드+설명이
+         뜬다. 항상 화면 정중앙 같은 자리에서만 나타났다 사라진다 -->
+    <div
+      class="focus-detail"
+      id="focus-detail"
+      aria-hidden="true"
+    >
+      <button
+        type="button"
+        class="focus-detail-close"
+        id="focus-detail-close"
+        aria-label="閉じる"
+      >
+        ×
+      </button>
+      <span
+        class="focus-detail-title"
+        id="focus-detail-title"
+      ></span>
+      <p
+        class="focus-detail-text"
+        id="focus-detail-text"
+      ></p>
+    </div>
+
+    <p
+      class="focus-hint"
+      id="focus-hint"
+      data-hint-progress="3人中{n}人見つけました。続けて探しますか？"
+      data-hint-complete="3人のキャラクターを全部見つけました！ロック解除中..."
+    >
+      カーソルを動かして、隠れた3人のキャラクターを探してみてください
+    </p>
+
+    <button
+      type="button"
+      id="focus-skip"
+      class="focus-skip"
+    >
+      スキップ
+    </button>
+  </div>
+
+  <!-- 전체보기: skip을 누르면 숨바꼭질 장면 대신 3개 카드를
+       한 번에 보여준다(Pursue 섹션의 전체보기 카드 그리드와 같은
+       느낌으로, 배경도 다시 밝은 톤으로 돌아온다) -->
+  <div
+    class="focus-expanded"
+    id="focus-expanded"
+    aria-hidden="true"
+  >
+    <p class="focus-expanded-badge">What I focus on</p>
+
+    <div class="focus-card">
+      <span class="focus-card-badge focus-card-badge--a">People &amp; Communication</span>
+      <p>
+        人を理解し、つなげる過程を大切にしています。
+        異なる背景を持つ人々が互いにつながり、共に経験を作り上げる瞬間に大きな意味を感じます。
+      </p>
+    </div>
+
+    <div class="focus-card">
+      <span class="focus-card-badge focus-card-badge--b">Data &amp; Insight</span>
+      <p>
+        データを通じて社会や現象の流れを客観的に見つめ、その中から意味のあるパターンや可能性を見出そうとしています。
+        分析は、より多くの価値を発見し、新しい視点を得るための私自身の観察ツールです。
+      </p>
+    </div>
+
+    <div class="focus-card">
+      <span class="focus-card-badge focus-card-badge--c">Content &amp; Making</span>
+      <p>
+        新しいアイデアを実体のある成果物として具現化し、日常に新たなインスピレーションを吹き込むことを目指しています。
+        私のすべての創作は記録から始まります。記録を通じて考えを具体化し、それを世界と共有しながら発展させていく過程を大切にしています。
+      </p>
+    </div>
+
+    <button
+      type="button"
+      id="focus-close"
+      class="focus-close"
+    >
+      閉じる
+    </button>
+  </div>
+</section>
+
+<script
+  type="module"
+  src="{{ url_for('static', filename='js/identity_pursue.js') }}"
+></script>
+
+<script
+  type="module"
+  src="{{ url_for('static', filename='js/identity_focus.js') }}"
+></script>
+
+<script
+  type="module"
+  src="{{ url_for('static', filename='js/identity_cloud_scene.js') }}"
+></script>
+{% endblock %}

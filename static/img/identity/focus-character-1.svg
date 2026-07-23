@@ -1,0 +1,22 @@
+<!--
+  placeholder: "People & Communication" 키워드에 대응하는 숨은 캐릭터.
+  지금은 간단한 도형으로만 그린 임시 그림이고, 나중에 실제
+  캐릭터 일러스트 파일로 그대로 바꿔치기하면 된다
+  (static/img/identity/focus-character-1.svg 파일명만 유지하면 됨).
+-->
+<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="42" r="28" fill="#f2c14e" />
+  <path
+    d="M26 136 C26 96 40 78 60 78 C80 78 94 96 94 136 Z"
+    fill="#f2c14e"
+  />
+  <circle cx="49" cy="40" r="4.5" fill="#302a21" />
+  <circle cx="71" cy="40" r="4.5" fill="#302a21" />
+  <path
+    d="M48 54 C53 60 67 60 72 54"
+    stroke="#302a21"
+    stroke-width="3.5"
+    stroke-linecap="round"
+    fill="none"
+  />
+</svg>

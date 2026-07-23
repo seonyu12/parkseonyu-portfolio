@@ -1,0 +1,14 @@
+<!-- detail.html: Archive 영역(Reading 등)의 공통 상세 페이지 -->
+<!-- base.html을 상속받는다 -->
+{% extends "base.html" %}
+<!-- item은 Flask 라우트에서 이 템플릿을 렌더링할 때 넘겨주는 변수(딕셔너리/객체) -->
+<!-- {{ item.title }} 처럼 점(.)으로 그 안의 값을 꺼내 쓸 수 있다 -->
+{% block title %}박선유 — {{ item.title }}{% endblock %}
+{% block content %}
+<section>
+  <h1>{{ item.title }}</h1>
+  <p>{{ item.author }}</p>
+  <p>{{ item.review }}</p>
+  <a href="/archive/reading/">← 목록으로</a>
+</section>
+{% endblock %}

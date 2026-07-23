@@ -1,9 +1,15 @@
 <!-- archive/index.html: Archive 메인 페이지 -->
+<!-- base.html을 상속받아 title/content 블록만 채운다 -->
 {% extends "base.html" %}
 {% block title %}박선유 — Archive{% endblock %}
 {% block content %}
 <section>
   <h1>Archive</h1>
-  <p>Travel, Study, Reading, Blog 4개 영역이 여기에 들어갈 예정입니다.</p>
+  <p>
+    Travel, Study,
+    <!-- Reading은 실제로 만들어진 페이지라 링크로 연결 -->
+    <a href="/archive/reading/">Reading</a>,
+    Blog 4개 영역이 여기에 들어갈 예정입니다.
+  </p>
 </section>
 {% endblock %}

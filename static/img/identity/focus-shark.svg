@@ -1,0 +1,17 @@
+<!--
+  placeholder: 이스터에그용 상어. 진짜 키워드 캐릭터가 아니라
+  실수로 찾았을 때 화면 밖으로 튀어나가는 장난 연출용.
+  나중에 실제 3D 상어 이미지로 교체 가능(파일명 focus-shark.svg 유지).
+-->
+<svg viewBox="0 0 170 110" xmlns="http://www.w3.org/2000/svg">
+  <path
+    d="M8 62 C8 40 42 24 86 24 C126 24 156 40 156 58 L170 42 L154 68 C146 84 120 92 86 92 C42 92 8 82 8 62 Z"
+    fill="#8a97a3"
+  />
+  <path d="M72 24 L84 2 L94 27 Z" fill="#8a97a3" />
+  <circle cx="46" cy="52" r="4" fill="#1a1a1a" />
+  <path
+    d="M30 68 L120 68 L112 78 L38 78 Z"
+    fill="#eef1f3"
+  />
+</svg>

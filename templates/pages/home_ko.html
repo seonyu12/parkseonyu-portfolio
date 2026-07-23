@@ -1,22 +1,17 @@
-<!-- ============================================ -->
-<!-- home_ko.html                                  -->
-<!-- 실제 한국어 홈 페이지.                          -->
-<!-- base.html의 틀을 빌려쓰고 content 블록 안의 내용만 채운다 -->
-<!-- ============================================ -->
-
-<!-- extends "base.html" 는 "이 페이지는 base.html을 상속받는다"는 선언 -->
-<!-- 반드시 파일 맨 첫 줄에 와야 한다 -->
+<!-- home_ko.html: 한국어 홈(메인) 페이지. base.html을 상속받아 필요한 블록만 채운다 -->
 {% extends "base.html" %}
-
-<!-- head.html에 있던 title 블록을 이 페이지만의 제목으로 덮어쓴다 -->
-<!-- (기본값 "박선유" 대신 "박선유 — Home"으로 바뀜) -->
+<!-- 브라우저 탭에 뜨는 제목을 이 페이지 전용으로 덮어쓴다 -->
 {% block title %}박선유 — Home{% endblock %}
 
-<!-- base.html의 블록 content endblock %} 빈 칸을 -->
-<!-- 아래 내용으로 채워 넣는다 -->
+<!-- page_css 블록: base.html에 없는, 홈 페이지에서만 필요한 CSS를 추가로 불러온다 -->
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/home.css') }}">
+{% endblock %}
+
+<!-- content 블록: base.html의 <main> 안 빈 칸을 채우는 실제 페이지 본문 -->
 {% block content %}
-<section>
-  <h1>Hello.</h1>
-  <p>Portfolio site is coming soon.</p>
+<section class="hero">
+  <!-- url_for('static', filename=...) 는 static 폴더 안 파일의 실제 경로를 Flask가 계산해준다 -->
+  <img src="{{ url_for('static', filename='img/home/hero-placeholder.png') }}" alt="Hero 이미지">
 </section>
 {% endblock %}

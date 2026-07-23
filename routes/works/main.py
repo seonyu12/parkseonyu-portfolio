@@ -8,6 +8,7 @@ from flask import Blueprint, render_template
 works_bp = Blueprint("works", __name__, url_prefix="/works")
 
 
+# GET 방식으로 /works/ 주소에 요청이 오면 아래 works_list 함수가 실행된다
 @works_bp.get("/")
 def works_list():
     # 아직 Notion 연동 전이라 가짜 데이터를 직접 만들어서 쓴다

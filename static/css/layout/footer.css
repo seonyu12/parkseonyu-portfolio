@@ -1,0 +1,28 @@
+/* ============================================ */
+/* footer.css                                    */
+/* 하단 저작권/이메일 표시 영역 스타일. 화면에 항상 고정 */
+/* ============================================ */
+
+.site-footer {
+    position: fixed;
+    bottom: var(--sp-lg);
+    left: var(--sp-xl);
+  }
+  
+  .site-footer p {
+    /* font-style: italic 을 주면 글자가 오른쪽으로 살짝 기울어진 이탤릭체가 된다 */
+    font-style: italic;
+  
+    font-size: 16px;
+    color: var(--color-text);
+  }
+  
+  .site-footer a {
+    text-decoration: none;
+  
+    /* 링크 색도 부모(p)와 같은 색으로 맞춰서, 저작권 기호와 이메일이 톤이 통일되게 함 */
+    color: inherit;
+  
+    /* 링크도 이탤릭 유지 (a 태그가 기본적으로 이탤릭을 안 받는 경우가 있어 명시적으로 지정) */
+    font-style: inherit;
+  }

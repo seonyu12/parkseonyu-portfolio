@@ -1,0 +1,27 @@
+/* ============================================ */
+/* pages/home.css                                */
+/* Home 페이지에서만 쓰이는 전용 스타일             */
+/* ============================================ */
+
+.hero {
+    /* 세로로 쌓으면서, 가로축(가운데)으로 정렬 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  
+    /* 텍스트도 가운데 정렬 */
+    text-align: center;
+  
+    padding: var(--sp-xl) 0;
+  }
+  
+  .hero img {
+    /* Hero 이미지가 화면보다 커지지 않도록 최대 너비 제한 */
+    max-width: 500px;
+  
+    /* 화면이 좁을 땐 이미지도 같이 줄어들도록 비율 유지 */
+    width: 100%;
+    height: auto;
+  
+    margin-top: var(--sp-xl);
+  }

@@ -1,25 +1,25 @@
 <!-- ============================================ -->
 <!-- header.html                                   -->
-<!-- 모든 페이지 상단에 공통으로 뜨는 로고 + 메뉴     -->
+<!-- 모든 페이지 상단에 공통으로 뜨는 헤더: 로고 + 메뉴(nav) -->
+<!-- base.html이 include 태그로 이 파일을 통째로 끼워 넣는다 -->
 <!-- ============================================ -->
-
 <header class="site-header">
-
-    <!-- 로고 역할을 하는 링크. 클릭하면 지금 언어의 홈으로 이동 -->
-    <a href="/{{ lang }}/" class="logo">박선유</a>
-  
     <nav>
-      <!-- Identity, About, Contact는 pages_bp에서 언어를 받는 구조라 lang을 붙인다 -->
-      <a href="/{{ lang }}/identity">Identity</a>
-      <a href="/{{ lang }}/about">About</a>
 
-      <!-- Works, Archive는 아직 언어별 라우팅 전이라 (url_prefix에 lang이 없음) -->
-      <!-- lang을 붙이지 않고 그냥 /works/, /archive/ 로 이동한다 -->
-      <!-- Stage 9에서 Works/Archive도 언어별 라우팅이 추가되면 이 부분도 함께 수정할 예정 -->
-      <a href="/works/">Works</a>
-      <a href="/archive/">Archive</a>
+      <!-- 로고를 누르면 현재 언어(lang)의 홈으로 이동한다. 예: lang이 "ko"면 "/ko/" -->
+      <a href="/{{ lang }}/" class="logo">
+        <img src="{{ url_for('static', filename='img/ui/logo.png') }}" alt="박선유 로고">
+      </a>
 
-      <a href="/{{ lang }}/contact">Contact</a>
-    </nav>
+      <!-- request.path 는 지금 보고 있는 페이지의 실제 주소(URL 경로)를 담고 있다 -->
+      <!-- 예: 지금 /ko/identity 페이지에 있다면 request.path는 "/ko/identity" -->
+      <!-- 'identity' in request.path 는 "그 경로 문자열 안에 identity라는 글자가 포함되어 있는지" 확인 -->
+      <!-- 포함되어 있으면(=지금 이 페이지에 있으면) active 클래스를 추가로 붙인다 -->
+      <a href="/{{ lang }}/identity" class="{{ 'active' if 'identity' in request.path }}">Identity</a>
+      <a href="/{{ lang }}/about" class="{{ 'active' if 'about' in request.path }}">About</a>
+      <a href="/works/" class="{{ 'active' if 'works' in request.path }}">Works</a>
+      <a href="/archive/" class="{{ 'active' if 'archive' in request.path }}">Archive</a>
+      <a href="/{{ lang }}/contact" class="{{ 'active' if 'contact' in request.path }}">Contact</a>
   
+    </nav>
   </header>

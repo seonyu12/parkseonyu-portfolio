@@ -9,6 +9,8 @@ from flask import Blueprint, render_template
 from routes.works.main import works_bp
 
 
+# "<slug>"는 URL 안에서 값을 넘겨받는 자리표시자(변수)다
+# 예: 주소가 /works/project-a/ 로 들어오면 slug 매개변수에 "project-a"가 담겨서 함수가 실행된다
 @works_bp.get("/<slug>/")
 def works_detail(slug):
     # 실제로는 slug로 Notion 데이터를 찾아야 하지만, 지금은 가짜 데이터
