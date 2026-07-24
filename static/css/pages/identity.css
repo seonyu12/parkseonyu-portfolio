@@ -216,6 +216,14 @@ body:has(.identity-scene) .site-header {
      붙는 시점)에 같이 시작해서 같은 길이로 같이 끝나야 자연스럽게
      어우러진다 */
   transition: background 1.8s ease;
+
+  /* 전역 header.css는 헤더 맨 아래에 얇은 은은한 구분선
+     (border-bottom: 1px solid rgba(0,0,0,0.08))을 그어서 헤더와
+     본문을 시각적으로 나누는데, 이 페이지는 반대로 헤더 배경을
+     매 구간의 실제 배경색과 정확히 맞춰서 "네비게이터도 페이지의
+     일부"처럼 이어 보이게 만드는 게 목적이라, 이 구분선이 오히려
+     이질적인 경계로 도드라져 보였다 — 여기서만 투명하게 없앤다 */
+  border-bottom: none;
 }
 
 /* ============================================
@@ -236,12 +244,21 @@ body:has(.identity-scene)[data-header-theme="storm"] .site-header {
   background: var(--storm-top, #a6aaad);
 }
 
+/* 위→아래로 쓸어내리는 그라데이션 방식은 경계선이 인위적으로
+   보이고 네비게이터와 페이지 사이가 이질적이라는 피드백을 받아,
+   단순한 색 페이드로 되돌렸다. 실제로 화면이 밝아지는 순간(is-expanded가
+   붙는 시점)과 길이(#identity-focus도 같은 0.6s)만 맞춰서, 헤더와
+   페이지가 같은 순간에 같은 속도로 색만 부드럽게 바뀐다 */
 body:has(.identity-scene)[data-header-theme="focus-dark"] .site-header {
   background: #0a0a0a;
+
+  transition: background 0.6s ease;
 }
 
 body:has(.identity-scene)[data-header-theme="focus-light"] .site-header {
   background: var(--day-bottom, #fdf6d8);
+
+  transition: background 0.6s ease;
 }
 
 /* 배경이 진짜 새까말 때(focus-dark)만 메뉴 글자를 밝게 바꾼다.
@@ -2026,9 +2043,6 @@ html:lang(ja) .body-text {
 .pursue-expanded-badge {
   padding: 10px 28px;
 
-  border: 1.5px dashed rgba(150, 60, 40, 0.55);
-  border-radius: 999px;
-
   font-family: var(--identity-title-font);
   font-size: 1.3rem;
   font-weight: 700;
@@ -2220,7 +2234,9 @@ html:lang(ja) .body-text {
   /* 위쪽 12%만 identity-pursue와 같은 밝은 크림색을 유지하다가
      빠르게 새까맣게 전환되도록 해서, "스크롤하면 점점 어두워지는
      화면"이라는 목업 속 첫 장면을 별도 JS 없이 CSS 그라데이션만으로
-     재현한다 */
+     재현한다. (위→아래로 쓸어내리는 그라데이션 방식도 써봤는데,
+     경계선이 인위적으로 보이고 네비게이터와 이질적이라는 피드백을
+     받아 단순한 색 페이드로 되돌렸다) */
   background: linear-gradient(
     180deg,
     #fdf6d8 0%,
@@ -2275,6 +2291,17 @@ html:lang(ja) .body-text {
 
 .identity-focus.is-expanded .focus-stage {
   display: none;
+}
+
+/* "닫기"를 눌러 전체보기에서 무대로 되돌아갈 때, 순식간에 팝 하고
+   나타나는 대신 서서히 페이드로 어두워지도록 한다. identity_focus.js가
+   is-expanded를 떼자마자(무대가 display:block으로 돌아오는 그
+   프레임) is-returning을 같이 붙여서 무대를 투명하게 시작시키고,
+   바로 다음 프레임에 is-returning을 떼서 opacity가 0 → 1로
+   실제로 전환(0.9s, .focus-stage에 이미 걸려있는 transition)되게
+   만든다 */
+.identity-focus.is-returning .focus-stage {
+  opacity: 0;
 }
 
 /* z-index를 일부러 주지 않는다 — 여기에 z-index를 주면 새로운
@@ -2371,14 +2398,33 @@ html:lang(ja) .body-text {
 /* 볼록렌즈로 들여다보는 것처럼, 커서를 대면(누를 필요 없이) 살짝
    커진다. 버튼 자체(히트 영역)는 그대로 두고 이미지만 확대하는
    거라, 예전 책 hover 버그처럼 커서 아래에서 요소가 빠져나가
-   깜빡이는 일은 없다 */
+   깜빡이는 일은 없다. 예전엔 1.35배까지 커져서 실제 클릭 가능
+   영역(버튼)보다 이미지가 훨씬 크게 튀어나와, 그 튀어나온
+   부분을 눌러도 반응이 없어 "호버가 너무 커서 클릭이 어렵다"는
+   피드백이 있었다 — 은은하게만 반응하도록 배율을 크게 줄였다 */
 /* 상어는 이 볼록렌즈 효과를 제외한다 — 상어는 hover하는 순간
    화면 중앙으로 튀어나가 커지는 전용 애니메이션(focusSharkJump)이
    있어서, 여기서 또 살짝 커지면 두 효과가 겹쳐 시작 지점이
    흔들리는 것처럼 보일 수 있다 */
 .focus-character:not(.focus-character--shark):hover img,
 .focus-character:not(.focus-character--shark):focus-visible img {
-  transform: scale(1.35);
+  transform: scale(1.08);
+}
+
+/* 사이트 전역 common.css의 a/button 공통 hover 효과
+   ("transform: translateY(-2px); opacity: 0.8;")가 여기도 그대로
+   걸린다. transform은 누적되지 않고 통째로 덮어쓰는 속성이라, 이
+   전역 규칙이 .focus-character 고유의 중앙정렬용
+   "translate(-50%, -50%)"를 지워버려서, hover하는 순간 캐릭터
+   버튼 자체가 자기 자리에서 확 튀어나가 버리는 버그가 있었다
+   (.pursue-book:hover에서 이미 겪었던 것과 같은 문제) — 위의
+   img 확대 효과와 겹쳐서 "호버가 너무 세게 움직인다"는 원인이
+   이거였다. 여기서 다시 중앙정렬 transform으로 덮어쓰고, 전역
+   규칙의 opacity 감소(0.8)도 취소해 흐려지지 않게 한다 */
+.focus-character:hover,
+.focus-character:focus-visible {
+  transform: translate(-50%, -50%);
+  opacity: 1;
 }
 
 /* 상어 사진은 가로로 조금 더 긴 비율(약 1.18:1) */
@@ -2664,10 +2710,18 @@ html:lang(ja) .body-text {
 }
 
 /* ---------------- skip 버튼 ---------------- */
+/* 기본 위치는 화면 오른쪽 아래 구석이다. 예전엔 right/bottom으로
+   자리를 잡았는데, "키워드 3개를 다 찾으면 이 버튼이 화면 정중앙으로
+   옮겨온다"는 연출을 부드러운 transition으로 표현하려면 두 상태
+   모두 top/left(+transform)로 위치를 표현해야 한다 — right/bottom과
+   top/left는 서로 보간(transition)이 안 되기 때문이다. 그래서
+   기본 상태도 top/left + transform으로 다시 표현했다(오른쪽 아래
+   구석에 있는 것처럼 보이는 계산식은 동일하다) */
 .focus-skip {
   position: absolute;
-  right: clamp(20px, 4vw, 48px);
-  bottom: clamp(20px, 4svh, 48px);
+  top: calc(100% - clamp(20px, 4svh, 48px));
+  left: calc(100% - clamp(20px, 4vw, 48px));
+  transform: translate(-100%, -100%);
   z-index: 11;
 
   border: 1px solid rgba(243, 234, 208, 0.4);
@@ -2687,17 +2741,98 @@ html:lang(ja) .body-text {
   cursor: pointer;
   pointer-events: auto;
 
-  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  transition:
+    top 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    left 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    padding 0.3s ease;
 }
 
+/* 사이트 전역 common.css의 a/button 공통 hover 효과
+   ("transform: translateY(-2px); opacity: 0.8;")가 여기도 걸린다.
+   .focus-skip은 top/left + transform(translate(-100%, -100%))으로
+   오른쪽 아래 구석에 위치를 잡아두는데, transform은 누적되지 않고
+   통째로 덮어써서 이 전역 규칙이 그 위치 계산용 transform을
+   지워버리면 hover하는 순간 버튼이 원래 자리에서 확 튀어 보인다
+   — 아래에서 다시 원래 위치 transform으로 덮어쓰고, 전역 규칙의
+   opacity 감소(0.8)도 취소한다 */
 .focus-skip:hover,
 .focus-skip:focus-visible {
+  transform: translate(-100%, -100%);
+  opacity: 1;
+
   background: rgba(243, 234, 208, 0.92);
   border-color: rgba(243, 234, 208, 0.92);
   color: #1a1512;
 }
 
+/* 3개를 다 찾으면 identity_focus.js가 이 클래스를 붙인다. 더 이상
+   건너뛸 게 없으니 skip 버튼은 그냥 숨긴다 — 대신 화면 정중앙에
+   .focus-viewall-prompt가 나타난다(아래) */
+.focus-skip.is-done {
+  display: none;
+}
+
 .identity-focus.is-expanded .focus-skip {
+  display: none;
+}
+
+/* ---------------- 전체보기 링크(정중앙, 텍스트만) ---------------- */
+/* 3개를 다 찾으면 위 skip 버튼 대신 화면 정중앙에 나타나는 링크.
+   한때 이 자리에 눈에 띄는 빨간 배경 버튼(.focus-skip.is-ready)을
+   뒀었는데, UI가 튄다는 피드백을 받아 배경/테두리 없이 밑줄만
+   있는 수수한 텍스트 링크로 바꿨다 */
+.focus-viewall-prompt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9;
+
+  border: none;
+  background: none;
+
+  padding: 6px 4px;
+
+  color: #f3ead0;
+  /* skip 버튼(UI 텍스트, sans-serif)과 달리 이건 "이제 결과를
+     보러 가자"는 초대 문구에 가까워서 장식 폰트를 쓰되, 평창별빛
+     대신 고운바탕(--identity-detail-font)으로 바꿨다 */
+  font-family: var(--identity-detail-font);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+
+  text-decoration: underline;
+  text-underline-offset: 4px;
+
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 0.4s ease, color 0.25s ease;
+}
+
+.focus-viewall-prompt.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 전역 button:hover의 transform: translateY(-2px)가 이 버튼의
+   중앙정렬용 translate(-50%, -50%)를 지워버리는 문제를 막는다
+   (.focus-skip/.focus-character에서 이미 겪은 것과 같은 버그) */
+.focus-viewall-prompt:hover,
+.focus-viewall-prompt:focus-visible {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+
+  color: #ffffff;
+}
+
+.identity-focus.is-expanded .focus-viewall-prompt {
   display: none;
 }
 
@@ -2726,11 +2861,8 @@ html:lang(ja) .body-text {
 
   padding: 10px 26px;
 
-  border: 1.5px dashed rgba(178, 58, 46, 0.55);
-  border-radius: 999px;
-
-  font-family: 'Playfair Display', 'Times New Roman', serif;
-  font-style: italic;
+  /* Pursue 쪽 배지와 통일: 테두리 없이, 같은 타이틀 폰트를 쓴다 */
+  font-family: var(--identity-title-font);
   font-weight: 700;
   font-size: 1.3rem;
 
@@ -2738,23 +2870,35 @@ html:lang(ja) .body-text {
 }
 
 .focus-card {
+  position: relative;
+
   display: flex;
   flex-direction: column;
   gap: 14px;
 
-  padding: 22px;
+  /* 위쪽에 키워드 배지가 상자 밖으로 살짝 튀어나와 앉을 자리를
+     남겨두려고 top padding을 다른 쪽보다 넉넉히 둔다 */
+  padding: 34px 22px 22px;
+  margin-top: 16px;
 
   border-radius: 18px;
 
   background: rgba(255, 253, 246, 0.7);
 }
 
+/* 예전엔 이 배지가 연노랑 카드 박스 padding 안에 다른 텍스트와
+   나란히 파묻혀 있어서 "박스 안에 갇힌" 느낌이었다. 카드 위쪽
+   테두리에 걸치도록 위치를 살짝 끌어올려서, 카드 배경과는 분리된
+   자기만의 태그처럼 보이게 만들었다 */
 .focus-card-badge {
-  align-self: flex-start;
+  position: absolute;
+  top: -16px;
+  left: 20px;
 
   padding: 10px 20px;
 
   border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
 
   font-family: var(--identity-keyword-font, inherit);
   font-size: 1rem;
@@ -2877,5 +3021,12 @@ html:lang(ja) .body-text {
 
   .focus-card-badge {
     font-size: 0.92rem;
+  }
+
+  /* 텍스트 링크라 원래 히트 영역이 좁은데, 좁은 화면에서는 특히
+     손가락으로 정확히 누르기 어려우니 안팎 여백을 넉넉히 키운다 */
+  .focus-viewall-prompt {
+    padding: 12px 16px;
+    font-size: 1.05rem;
   }
 }

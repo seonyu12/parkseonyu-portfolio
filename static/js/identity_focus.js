@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const detailClose = document.querySelector("#focus-detail-close");
   const shark = document.querySelector("#focus-shark");
   const skipButton = document.querySelector("#focus-skip");
+  const viewAllPrompt = document.querySelector("#focus-viewall");
   const closeButton = document.querySelector("#focus-close");
   const expandedPanel = document.querySelector("#focus-expanded");
   const characters = document.querySelectorAll(
@@ -66,6 +67,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (isSceneStormy) {
       theme = "storm";
     } else if (isFocusInCenter) {
+      // is-melting은 무대(캐릭터+안개)만 눈 녹듯이 옅어지는
+      // 연출이고, 그 아래 깔린 identity-focus 섹션 자체의 배경은
+      // 여전히 어두운 그라데이션인 채로 남아있다가, openExpandedView가
+      // is-expanded를 붙이는 순간에야 실제로 밝은 색으로 바뀐다
+      // (identity.css의 .identity-focus.is-expanded 참고). 한때
+      // is-melting 시작 시점부터 헤더를 미리 밝히려고 했는데, 그러면
+      // 화면은 아직 어두운데 헤더만 먼저 밝아지기 시작해서 오히려
+      // 더 어긋나 보였다 — 실제로 화면이 밝아지는 바로 그 순간
+      // (is-expanded가 붙는 순간)에 헤더도 같이 바뀌도록 되돌린다
       theme = section.classList.contains("is-expanded")
         ? "focus-light"
         : "focus-dark";
@@ -141,7 +151,12 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const MARGIN = 10; // 가장자리에서 최소 10% 떨어뜨린다
+    // 가장자리에서 최소 이만큼(%) 떨어뜨린다. 예전엔 10%였는데,
+    // 좁은 화면에서는 10%가 캐릭터 이미지 자체의 절반 너비보다도
+    // 작아서 가장자리에 걸치듯 놓이는 경우가 있었다 — hover 시
+    // 볼록렌즈 확대(비록 지금은 배율을 줄였지만)까지 겹치면 화면
+    // 밖으로 살짝 잘려 보일 수 있어서 여유를 더 뒀다
+    const MARGIN = 14;
     const MIN_DISTANCE = 26; // 요소끼리 최소 이만큼(%) 떨어뜨린다
     const MAX_ATTEMPTS = 40;
 
@@ -336,16 +351,32 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // 3개를 다 찾으면 "누르지 않아도" 자동으로 잠금 해제되듯이
-    // 어두운 배경이 사라지고 전체보기로 넘어간다. 방금 찾은
-    // 3번째 캐릭터의 설명을 읽을 시간을 조금 주기 위해
-    // 살짝 지연시킨다
+    // 3개를 다 찾으면 skip 버튼은 더 이상 필요 없으니(건너뛸 게
+    // 남지 않았으므로) 숨기고, 대신 화면 정중앙에 "전체보기" 문구를
+    // 눌러야만 전체보기로 넘어가는 별도 링크를 보여준다. 방금 찾은
+    // 3번째 캐릭터의 설명을 잠깐 읽을 시간(600ms)을 준 뒤 나타난다
     if (foundCount >= characters.length && !allFoundTriggered) {
       allFoundTriggered = true;
 
       window.setTimeout(function () {
-        celebrateAllFound();
-      }, 1500);
+        showViewAllPrompt();
+      }, 600);
+    }
+  }
+
+  // skip 버튼을 숨기고 "전체보기" 링크를 화면 정중앙에 드러낸다.
+  // 예전엔 skip 버튼 자체를 화면 중앙으로 옮기고 눈에 띄는 빨간
+  // 버튼으로 바꿨는데, 그 UI가 튀어 보인다는 피드백을 받아 아예
+  // 별개의 수수한 텍스트 링크(배경/테두리 없이 밑줄만)로 바꿨다.
+  // skip 버튼은 손대지 않고 그대로 두되(원래 자리에서 사라질 뿐,
+  // 동작 자체는 안 바뀐다) 시각적으로만 숨긴다
+  function showViewAllPrompt() {
+    if (skipButton) {
+      skipButton.classList.add("is-done");
+    }
+
+    if (viewAllPrompt) {
+      viewAllPrompt.classList.add("is-visible");
     }
   }
 
@@ -512,9 +543,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // skip 버튼: 숨바꼭질 무대 대신 3개 카드를 한 번에 보여주는
   // 전체보기로 전환한다(팝업이 아니라 같은 섹션 안에서 내용만
   // 바뀌는 방식). "닫기"를 누르면 다시 숨바꼭질 무대로 돌아간다.
-  // 이 openExpandedView 함수는 skip 버튼뿐 아니라, 키워드 3개를
-  // 다 찾았을 때 자동으로 열리는 celebrateAllFound에서도 그대로
-  // 재사용한다
+  // 이 openExpandedView 함수는 skip 버튼의 celebrateAllFound
+  // 애니메이션(아래)이 끝난 뒤에도 그대로 재사용한다
   // ============================================
   function openExpandedView() {
     section.classList.add("is-expanded");
@@ -577,12 +607,18 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // ============================================
-  // 키워드 3개를 다 찾으면, "전체보기"를 누르지 않아도 검은
-  // 배경/안개가 눈 녹듯이 서서히 사라지면서 자동으로 전체보기
-  // 카드 화면이 뜬다. is-melting 클래스는 무대(.focus-stage)의
-  // opacity를 서서히 0으로 낮추는 CSS 전환을 트리거하고, 그
-  // 전환이 끝날 즈음 openExpandedView를 호출해 실제로
-  // 전체보기로 전환한다
+  // skip 버튼을 누르든(캐릭터를 다 찾기 전에 건너뛰는 경우),
+  // 다 찾은 뒤 화면 정중앙에 뜨는 "전체보기" 링크를 누르든 항상
+  // 이 함수를 탄다) 무대(캐릭터+안개)가
+  // 눈 녹듯이 서서히 사라지면서 전체보기 카드 화면으로 넘어간다.
+  // is-melting 클래스는 무대(.focus-stage)의 opacity만 서서히
+  // 0으로 낮추는 CSS 전환을 트리거할 뿐, identity-focus 섹션
+  // 자체의 배경(어두운 그라데이션)은 이 시점엔 아직 그대로다 —
+  // 실제로 화면이 밝아지는 건 아래 openExpandedView가 is-expanded를
+  // 붙이는 순간이라, 헤더 색도 그때 가서 같이 바뀌어야 타이밍이
+  // 맞는다(여기서 미리 바꾸면 화면은 아직 어두운데 헤더만 먼저
+  // 밝아지기 시작해 버린다 — updateHeaderDarkState는
+  // openExpandedView 안에서만 호출한다)
   // ============================================
   function celebrateAllFound() {
     section.classList.add("is-melting");
@@ -595,14 +631,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (skipButton) {
     skipButton.addEventListener("click", function () {
-      openExpandedView();
+      celebrateAllFound();
+    });
+  }
+
+  if (viewAllPrompt) {
+    viewAllPrompt.addEventListener("click", function () {
+      celebrateAllFound();
     });
   }
 
   if (closeButton) {
     closeButton.addEventListener("click", function () {
+      // 전체보기(밝은 화면)에서 "닫기"를 누르면 무대(어두운
+      // 숨바꼭질 장면)로 되돌아간다. 예전엔 is-expanded만 떼서
+      // 순식간에 팝 하고 어두워졌는데, is-returning을 먼저 붙여
+      // 무대를 투명한 상태로 시작시킨 다음 바로 다음 프레임에
+      // 떼서 opacity 전환(.focus-stage, 0.9s)이 실제로 재생되게
+      // 만든다 — celebrateAllFound의 밝아지는 연출과 대칭되는
+      // 어두워지는 페이드
+      section.classList.add("is-returning");
       section.classList.remove("is-expanded");
       updateHeaderDarkState();
+
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          section.classList.remove("is-returning");
+        });
+      });
 
       window.requestAnimationFrame(function () {
         section.scrollIntoView({

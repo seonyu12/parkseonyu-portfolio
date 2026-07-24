@@ -538,17 +538,31 @@
       class="focus-hint"
       id="focus-hint"
       data-hint-progress="3개 중 {n}개 찾았어요. 계속 찾아볼까요?"
-      data-hint-complete="캐릭터 3개를 모두 찾았어요! 잠금 해제 중..."
+      data-hint-complete="캐릭터 3개를 모두 찾았어요! 가운데 버튼을 눌러 전체보기로 넘어가세요"
     >
       커서를 움직여서 숨은 캐릭터 3개를 찾아보세요
     </p>
 
+    <!-- 3개를 다 찾기 전까지는 이 skip 버튼(오른쪽 아래 구석)으로
+         언제든 건너뛸 수 있다 -->
     <button
       type="button"
       id="focus-skip"
       class="focus-skip"
     >
       skip
+    </button>
+
+    <!-- 3개를 다 찾으면 위 skip 버튼은 숨고, 대신 이 링크가 화면
+         정중앙에 나타난다(identity_focus.js). 빨간 버튼 UI가 튄다는
+         피드백을 받아 배경/테두리 없이 밑줄만 있는 텍스트 링크로
+         만들었다 -->
+    <button
+      type="button"
+      id="focus-viewall"
+      class="focus-viewall-prompt"
+    >
+      전체보기
     </button>
   </div>
 
