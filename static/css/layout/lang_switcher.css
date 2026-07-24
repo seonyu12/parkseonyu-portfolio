@@ -30,4 +30,15 @@
     text-decoration: none;
     color: var(--color-text);
     font-size: 16px;
+
+    /* 색이 부드럽게 바뀌도록 트랜지션을 준다. common.css의 전역
+       a:hover(opacity:0.8, translateY(-2px))는 그대로 같이 적용되고,
+       여기서는 커서를 올린 그 언어의 글자색만 포인트 색으로
+       바꿔준다 */
+    transition: color 0.2s ease;
+  }
+
+  .lang-switcher a:hover,
+  .lang-switcher a:focus-visible {
+    color: var(--color-accent);
   }

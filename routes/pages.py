@@ -42,7 +42,10 @@ def about(lang):
     if lang not in current_app.config["SUPPORTED_LANGS"]:
         return redirect(f"/{current_app.config['DEFAULT_LANG']}/about")
 
-    return render_template("pages/about_ko.html", lang=lang)
+    # identity()와 같은 방식: ko/en/ja 세 언어 템플릿(about_ko.html/
+    # about_en.html/about_ja.html)이 모두 실제 내용으로 채워져
+    # 있으므로, lang 값에 맞는 파일을 그대로 골라서 렌더링한다
+    return render_template(f"pages/about_{lang}.html", lang=lang)
 
 
 # Identity 페이지. 주소는 /ko/identity, /en/identity 등

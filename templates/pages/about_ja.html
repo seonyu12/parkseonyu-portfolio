@@ -1,0 +1,261 @@
+<!-- about_ja.html: 日本語版 About ページ -->
+<!-- about_ko.htmlと完全に同じ構造 — テキストのみ日本語に置き換えた。 -->
+<!-- 構造/クラス/ID/JSフックはすべて同一に保ち、about.css/about.js  -->
+<!-- をそのまま共有する。"Education"/"Skills & Certifications"/   -->
+<!-- "Experience"/"Language Proficiency"/"Certifications"/         -->
+<!-- "Courses & Training"/"profile"/"My Message"は韓国語版でも     -->
+<!-- 元々英語のままだったデザインラベルなので、ここでもそのまま残す -->
+{% extends "base.html" %}
+
+{% block title %}パク・ソンユ — About{% endblock %}
+
+{% block page_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600;1,700&display=swap">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/about.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="about-intro" id="about-intro">
+  <div class="about-photo-frame">
+    <img
+      class="about-photo-img"
+      src="{{ url_for('static', filename='img/about/about-me.png') }}"
+      alt="パク・ソンユ"
+    >
+  </div>
+
+  <div class="about-intro-text">
+    <h1 class="about-intro-title">ABOUT ME</h1>
+
+    <p>こんにちは、クリエイターのパク・ソンユです。</p>
+
+    <p>
+      私は思いついたアイデアを素早く形にしてコンテンツやサービスに落とし込み、
+      それにふさわしいブランドを築く仕事をしています。単に収益を上げるだけ
+      でなく、人々と価値を分かち合い、誰かに良い影響を与えられる成果物を
+      作ることを目標にしています。
+    </p>
+
+    <p>
+      刺激や対立を誘うコンテンツよりも、人々がしばしゆとりを感じ、互いを
+      もう少し理解し合えるよう助けるコンテンツやサービスを目指しています。
+      そのために、市場と利用者を理解するためのデータ分析力、アイデアを
+      形にするコーディングとデザイン力、サービスを安定して運営するための
+      データベース管理力、そしてより多くの人と交流するための語学力を
+      身につけています。
+    </p>
+  </div>
+</section>
+
+<section class="about-profile" id="about-profile">
+  <div class="profile-stage" id="profile-stage">
+    <div class="profile-figure" id="profile-figure">
+      <button
+        type="button"
+        class="profile-paper profile-paper--a"
+        data-panel="education"
+      >
+        <span class="profile-paper-tab profile-paper-tab--a">Education</span>
+      </button>
+
+      <button
+        type="button"
+        class="profile-paper profile-paper--b"
+        data-panel="skills"
+      >
+        <span class="profile-paper-tab profile-paper-tab--b">Skills &amp; Certifications</span>
+      </button>
+
+      <button
+        type="button"
+        class="profile-paper profile-paper--c"
+        data-panel="experience"
+      >
+        <span class="profile-paper-tab profile-paper-tab--c">Experience</span>
+      </button>
+
+      <span class="profile-folder-back" aria-hidden="true"></span>
+      <span class="profile-folder-front" aria-hidden="true">
+        <span class="profile-folder-tab"></span>
+      </span>
+    </div>
+
+    <p class="profile-label">profile</p>
+  </div>
+</section>
+
+<section class="about-profile-detail" id="profile-detail" aria-hidden="true">
+  <div class="profile-detail-card">
+    <button type="button" class="profile-detail-close" id="profile-detail-close" aria-label="閉じる">×</button>
+
+    <div class="profile-panel" id="profile-panel-education" data-panel="education">
+      <span class="profile-badge profile-badge--a">Education</span>
+
+      <div class="profile-columns">
+        <div class="profile-column">
+          <h3>全北大学校 文献情報学科 卒業</h3>
+          <ul>
+            <li>情報の収集・構造化・分類、および利用者中心の情報サービス理論を学習</li>
+            <li>データに基づく情報分析と情報活用に関する基礎訓練</li>
+            <li>情報アクセシビリティとユーザー体験の観点からのサービス理解</li>
+          </ul>
+
+          <h3>全北大学校 英語英文学科 副専攻</h3>
+          <ul>
+            <li>英語の言語構造および文学テキストに対する体系的理解</li>
+            <li>英語を媒介とした文化・コミュニケーション方式の学習</li>
+            <li>学術的な英語読解および表現力の強化</li>
+          </ul>
+        </div>
+
+        <div class="profile-column">
+          <h3>英語教育ビッグデータ マイクロディグリー</h3>
+          <ul>
+            <li>英語学習データ分析に関する理論的基礎の学習</li>
+            <li>英語スピーキング評価の構造および評価基準の理解</li>
+            <li>学習者の個人差および情緒的要因に関する教育学的観点の習得</li>
+          </ul>
+
+          <h3>ブルネル・ロンドン大学 派遣語学研修</h3>
+          <ul>
+            <li>全北大学校の派遣プログラムを通じ、英国大学附属のEnglish Language Education課程を修了</li>
+            <li>英語を基盤とした学術環境での授業に参加</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-panel" id="profile-panel-skills" data-panel="skills">
+      <span class="profile-badge profile-badge--b">Skills &amp; Certifications</span>
+
+      <div class="profile-columns">
+        <div class="profile-column">
+          <h3>Language Proficiency</h3>
+          <ul>
+            <li>TOEIC 840点</li>
+            <li>TOEIC Speaking AL</li>
+          </ul>
+
+          <h3>Certifications</h3>
+          <ul>
+            <li>バリスタ資格証</li>
+            <li>韓国史能力検定試験 2級</li>
+            <li>英語教育コンテンツ資格証</li>
+          </ul>
+        </div>
+
+        <div class="profile-column">
+          <h3>Courses &amp; Training</h3>
+          <ul>
+            <li>K-MOOC「ICBM+AI概論」修了</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-panel" id="profile-panel-experience" data-panel="experience">
+      <span class="profile-badge profile-badge--c">Experience</span>
+
+      <div class="profile-columns">
+        <div class="profile-column">
+          <h3>国際経験・交流活動</h3>
+          <ul>
+            <li>17か国訪問を通じた多様な文化環境の経験</li>
+            <li>ブルネル・ロンドン大学派遣語学研修への参加</li>
+            <li>国際交流サークル「オウルリム」活動</li>
+            <li>外国人留学生メンタリング「ヌルボットドウミ」プログラムでの韓国語メンター経験</li>
+          </ul>
+
+          <h3>コンテンツ制作経験</h3>
+          <p>Terra Jump-Up公募展 奨励賞受賞</p>
+          <ul>
+            <li>YouTube・TikTok・リール動画コンテンツ制作経験</li>
+          </ul>
+          <p>ブログを通じた継続的な記録</p>
+        </div>
+
+        <div class="profile-column">
+          <h3>その他対外活動</h3>
+          <ul>
+            <li>ハイト眞露ハイファイブ 7期大学生サポーターズ</li>
+            <li>ブランド広報および現場キャンペーン参加</li>
+            <li>チームベースのプロジェクト遂行</li>
+            <li>全州カマク祭り「カマクジギ」社会・体育ボランティア活動</li>
+            <li>祭り現場運営および来場者案内</li>
+            <li>地域行事支援および現場コミュニケーション経験</li>
+          </ul>
+
+          <h3>経歴</h3>
+          <ul>
+            <li>
+              韓屋村 旅行者図書館 勤務
+              <ul>
+                <li>内外国人訪問者向け情報案内および接客対応</li>
+              </ul>
+            </li>
+            <li>
+              新世界百貨店 勤務
+              <ul>
+                <li>接客対応および売場運営支援</li>
+              </ul>
+            </li>
+            <li>
+              英語学院 勤務
+              <ul>
+                <li>学習者レベルに応じた授業補助</li>
+                <li>英語スピーキング活動および学習環境支援</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about-message" id="about-message">
+  <h2 class="about-message-title">My Message</h2>
+
+  <button
+    type="button"
+    class="vinyl-button"
+    id="vinyl-button"
+    aria-pressed="false"
+    aria-label="メッセージを再生"
+    data-label-play="メッセージを再生"
+    data-label-pause="メッセージを一時停止"
+  >
+    <svg class="vinyl-wave vinyl-wave--left" viewBox="0 0 220 120" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,60 18,60 30,18 42,102 54,30 66,90 78,44 90,76 102,60 220,60" />
+    </svg>
+
+    <span class="vinyl-disc" aria-hidden="true">
+      <span class="vinyl-groove"></span>
+      <span class="vinyl-label">
+        <span class="vinyl-hole"></span>
+      </span>
+    </span>
+
+    <svg class="vinyl-wave vinyl-wave--right" viewBox="0 0 220 120" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,60 118,60 130,60 142,18 154,102 166,30 178,90 190,44 202,76 220,60" />
+    </svg>
+  </button>
+
+  <audio
+    id="about-message-audio"
+    preload="none"
+    aria-hidden="true"
+  >
+    <source src="{{ url_for('static', filename='audio/about/message.mp3') }}" type="audio/mpeg">
+  </audio>
+
+  <p class="about-message-text" id="about-message-text">
+    レコードをクリックしてください
+  </p>
+</section>
+
+<script src="{{ url_for('static', filename='js/about.js') }}"></script>
+{% endblock %}

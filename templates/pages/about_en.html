@@ -1,0 +1,262 @@
+<!-- about_en.html: English About page -->
+<!-- about_ko.html과 완전히 같은 구조 — 텍스트만 영어로 옮겼다.        -->
+<!-- 구조/클래스/ID/JS 훅은 전부 동일하게 유지해서 about.css/about.js -->
+<!-- 를 그대로 공유한다. "Education"/"Skills & Certifications"/     -->
+<!-- "Experience"/"Language Proficiency"/"Certifications"/          -->
+<!-- "Courses & Training"/"profile"/"My Message"는 한국어판에서도    -->
+<!-- 원래 영어 그대로였던 디자인 라벨이라 여기서도 그대로 둔다        -->
+{% extends "base.html" %}
+
+{% block title %}Seonyu Park — About{% endblock %}
+
+{% block page_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600;1,700&display=swap">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/about.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="about-intro" id="about-intro">
+  <div class="about-photo-frame">
+    <img
+      class="about-photo-img"
+      src="{{ url_for('static', filename='img/about/about-me.png') }}"
+      alt="Seonyu Park"
+    >
+  </div>
+
+  <div class="about-intro-text">
+    <h1 class="about-intro-title">ABOUT ME</h1>
+
+    <p>Hello, I'm Seonyu Park, a creator.</p>
+
+    <p>
+      I turn ideas into content and services quickly, then build the brand
+      that fits them. Rather than stopping at profit, my goal is to create
+      work that shares value with people and leaves a positive impact on
+      someone.
+    </p>
+
+    <p>
+      Instead of content that provokes stimulation and conflict, I aim for
+      content and services that help people feel a moment of ease and
+      understand each other a little better. To do this, I'm building data
+      analysis skills to understand markets and users, coding and design
+      skills to bring ideas to life, database management skills to run
+      services reliably, and language skills to communicate with more
+      people.
+    </p>
+  </div>
+</section>
+
+<section class="about-profile" id="about-profile">
+  <div class="profile-stage" id="profile-stage">
+    <div class="profile-figure" id="profile-figure">
+      <button
+        type="button"
+        class="profile-paper profile-paper--a"
+        data-panel="education"
+      >
+        <span class="profile-paper-tab profile-paper-tab--a">Education</span>
+      </button>
+
+      <button
+        type="button"
+        class="profile-paper profile-paper--b"
+        data-panel="skills"
+      >
+        <span class="profile-paper-tab profile-paper-tab--b">Skills &amp; Certifications</span>
+      </button>
+
+      <button
+        type="button"
+        class="profile-paper profile-paper--c"
+        data-panel="experience"
+      >
+        <span class="profile-paper-tab profile-paper-tab--c">Experience</span>
+      </button>
+
+      <span class="profile-folder-back" aria-hidden="true"></span>
+      <span class="profile-folder-front" aria-hidden="true">
+        <span class="profile-folder-tab"></span>
+      </span>
+    </div>
+
+    <p class="profile-label">profile</p>
+  </div>
+</section>
+
+<section class="about-profile-detail" id="profile-detail" aria-hidden="true">
+  <div class="profile-detail-card">
+    <button type="button" class="profile-detail-close" id="profile-detail-close" aria-label="Close">×</button>
+
+    <div class="profile-panel" id="profile-panel-education" data-panel="education">
+      <span class="profile-badge profile-badge--a">Education</span>
+
+      <div class="profile-columns">
+        <div class="profile-column">
+          <h3>B.A. in Library and Information Science, Jeonbuk National University</h3>
+          <ul>
+            <li>Studied theories of information collection, structuring, and classification, and user-centered information services</li>
+            <li>Foundational training in data-driven information analysis and information utilization</li>
+            <li>Understood services from the perspective of information accessibility and user experience</li>
+          </ul>
+
+          <h3>Double Major in English Language and Literature, Jeonbuk National University</h3>
+          <ul>
+            <li>Systematic understanding of English language structure and literary texts</li>
+            <li>Studied culture and communication through the medium of English</li>
+            <li>Strengthened academic English reading and writing skills</li>
+          </ul>
+        </div>
+
+        <div class="profile-column">
+          <h3>Big Data in English Education Micro Degree</h3>
+          <ul>
+            <li>Studied the theoretical foundations of English learning data analysis</li>
+            <li>Understood the structure and criteria of English speaking assessments</li>
+            <li>Gained an educational perspective on individual learner differences and emotional factors</li>
+          </ul>
+
+          <h3>Exchange Program, Brunel University of London</h3>
+          <ul>
+            <li>Completed an English Language Education program at a UK university through Jeonbuk National University's exchange program</li>
+            <li>Took part in coursework in an English-based academic environment</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-panel" id="profile-panel-skills" data-panel="skills">
+      <span class="profile-badge profile-badge--b">Skills &amp; Certifications</span>
+
+      <div class="profile-columns">
+        <div class="profile-column">
+          <h3>Language Proficiency</h3>
+          <ul>
+            <li>TOEIC 840</li>
+            <li>TOEIC Speaking AL</li>
+          </ul>
+
+          <h3>Certifications</h3>
+          <ul>
+            <li>Barista Certificate</li>
+            <li>Korean History Proficiency Test, Level 2</li>
+            <li>English Education Content Certificate</li>
+          </ul>
+        </div>
+
+        <div class="profile-column">
+          <h3>Courses &amp; Training</h3>
+          <ul>
+            <li>Completed K-MOOC "Introduction to ICBM+AI"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-panel" id="profile-panel-experience" data-panel="experience">
+      <span class="profile-badge profile-badge--c">Experience</span>
+
+      <div class="profile-columns">
+        <div class="profile-column">
+          <h3>International Experience &amp; Exchange Activities</h3>
+          <ul>
+            <li>Experienced diverse cultural environments by visiting 17 countries</li>
+            <li>Took part in an exchange program at Brunel University of London</li>
+            <li>Active member of the international exchange club Eoullim</li>
+            <li>Mentored international students in Korean through the Neulbeot Buddy mentoring program</li>
+          </ul>
+
+          <h3>Content Creation Experience</h3>
+          <p>Won an Encouragement Award at the Terra Jump-Up competition</p>
+          <ul>
+            <li>Experience creating video content for YouTube, TikTok, and Reels</li>
+          </ul>
+          <p>Consistent record-keeping through blogging</p>
+        </div>
+
+        <div class="profile-column">
+          <h3>Other Extracurricular Activities</h3>
+          <ul>
+            <li>Hite Jinro Hi-Five, 7th Generation Student Supporters</li>
+            <li>Took part in brand promotion and on-site campaigns</li>
+            <li>Carried out team-based projects</li>
+            <li>"Gamaekjigi" social and athletic volunteer work at the Jeonju Gamaek Festival</li>
+            <li>Managed festival operations and guided visitors on-site</li>
+            <li>Supported local events and on-site communication</li>
+          </ul>
+
+          <h3>Work Experience</h3>
+          <ul>
+            <li>
+              Hanok Village Traveler's Library
+              <ul>
+                <li>Provided information and customer service to domestic and international visitors</li>
+              </ul>
+            </li>
+            <li>
+              Shinsegae Department Store
+              <ul>
+                <li>Customer service and store operations support</li>
+              </ul>
+            </li>
+            <li>
+              English language academy
+              <ul>
+                <li>Assisted classes according to learners' levels</li>
+                <li>Supported English speaking activities and the learning environment</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about-message" id="about-message">
+  <h2 class="about-message-title">My Message</h2>
+
+  <button
+    type="button"
+    class="vinyl-button"
+    id="vinyl-button"
+    aria-pressed="false"
+    aria-label="Play message"
+    data-label-play="Play message"
+    data-label-pause="Pause message"
+  >
+    <svg class="vinyl-wave vinyl-wave--left" viewBox="0 0 220 120" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,60 18,60 30,18 42,102 54,30 66,90 78,44 90,76 102,60 220,60" />
+    </svg>
+
+    <span class="vinyl-disc" aria-hidden="true">
+      <span class="vinyl-groove"></span>
+      <span class="vinyl-label">
+        <span class="vinyl-hole"></span>
+      </span>
+    </span>
+
+    <svg class="vinyl-wave vinyl-wave--right" viewBox="0 0 220 120" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,60 118,60 130,60 142,18 154,102 166,30 178,90 190,44 202,76 220,60" />
+    </svg>
+  </button>
+
+  <audio
+    id="about-message-audio"
+    preload="none"
+    aria-hidden="true"
+  >
+    <source src="{{ url_for('static', filename='audio/about/message.mp3') }}" type="audio/mpeg">
+  </audio>
+
+  <p class="about-message-text" id="about-message-text">
+    Please click the record
+  </p>
+</section>
+
+<script src="{{ url_for('static', filename='js/about.js') }}"></script>
+{% endblock %}

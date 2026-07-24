@@ -1,0 +1,895 @@
+/* ============================================================ */
+/* pages/about.css                                                */
+/* About 페이지 전용 스타일. 사용자가 직접 만든 목업(스크린샷)      */
+/* 구성 그대로: About Me / Profile(폴더+서류) / My Message(바이닐) */
+/* 배경색은 이 파일에서 따로 정의하지 않는다 — common.css의 body    */
+/* 그라데이션(#FCE79A → #FDF6D8)을 그대로 쓰면 목업 속 크림색 배경과 */
+/* 이미 같다                                                       */
+/* ============================================================ */
+
+/* About Me 소개글 전용 폰트(사용자가 직접 준 SUIT 파일). 하나의
+   family 이름('SUIT') 아래 두 굵기를 등록해서, 아래에서는
+   font-weight만 바꿔가며 부를 수 있게 한다 — 타이틀(Playfair
+   Display)은 이 폰트의 영향을 받지 않는다 */
+@font-face {
+  font-family: 'SUIT';
+  src: url('/static/fonts/about/SUIT-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SUIT';
+  src: url('/static/fonts/about/SUIT-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.about-intro,
+.about-profile,
+.about-profile-detail,
+.about-message {
+  /* Identity 페이지의 카드 배지 팔레트를 그대로 재사용해서, 페이지가
+     달라져도 같은 색 언어를 쓰는 것처럼 보이게 한다 */
+  --about-accent: #b23a2e;
+  --about-badge-a: #7a2e1f;
+  --about-badge-b: #c1613c;
+  --about-badge-c: #e08f7a;
+  --about-title-font: 'Playfair Display', 'Times New Roman', serif;
+  --about-body-font: 'SUIT', 'Pretendard', sans-serif;
+}
+
+/* ============================================================ */
+/* 헤더를 화면 위에 고정한다. Identity 페이지와 같은 이유다 —          */
+/* 아래 세 화면이 스크롤 스냅으로 한 칸씩 넘어가는데, 헤더가 그냥       */
+/* 문서 흐름을 따라가면 첫 화면(About Me)을 지나는 순간 메뉴가 안      */
+/* 보이게 된다. About 페이지는 배경이 항상 같은 크림색이라 Identity   */
+/* 처럼 구간별로 색이 바뀔 필요는 없어서, 고정된 한 가지 배경색만      */
+/* 쓴다(맑은 하늘색과 같은 톤 — common.css의 body 그라데이션 시작색) */
+/* ============================================================ */
+body:has(.about-intro) .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+
+  background: #fce79a;
+  border-bottom: none;
+}
+
+/* ============================================================ */
+/* 세 화면(About Me/Profile/My Message) 스크롤 스냅 — "자석처럼      */
+/* 화면에 고정". Identity 페이지의 Pursue/Focus 섹션과 같은 패턴이다 */
+/* ============================================================ */
+html:has(.about-intro) {
+  scroll-snap-type: y mandatory;
+}
+
+body:has(.about-intro) {
+  scroll-snap-type: y mandatory;
+}
+
+.about-intro,
+.about-profile,
+.about-message {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+
+  width: 100%;
+  height: 100svh;
+
+  overflow: hidden;
+  box-sizing: border-box;
+
+  /* 고정 헤더에 콘텐츠가 가리지 않도록 헤더 높이만큼 위쪽 여백을
+     확보한다 */
+  padding-top: clamp(76px, 11svh, 108px);
+}
+
+/* 헤더는 body:has(.about-intro) .site-header 규칙(위)이 페이지
+   전체에 항상 고정해두므로, Profile 상세 페이지가 열려도 따로
+   손댈 필요가 없다 */
+
+/* 서류를 누르면 아래 .about-profile-detail이 이 세 화면과 똑같은
+   높이(100svh)의 스냅 페이지로 끼어든다. profile 화면 자체는 항상
+   고정 높이 그대로라 이 규칙만으로 충분하다 — 예전에는 profile
+   섹션을 늘려서(height:auto) 그 안에 내용을 펼쳤는데, 그러면 폴더
+   그림 + 내용이 한 섹션에 섞여 스크롤이 애매한 지점에서 멈추는
+   문제가 있었다. 지금은 "내용"이 아예 자기 화면을 갖기 때문에
+   스크롤 스냅을 끄고 켤 필요 없이 항상 mandatory인 채로도
+   깔끔하게 그 화면에 딱 맞게 멈춘다 */
+
+/* ---------------- About Me ---------------- */
+.about-intro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(24px, 5vw, 64px);
+
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-left: clamp(24px, 6vw, 64px);
+  padding-right: clamp(24px, 6vw, 64px);
+}
+
+.about-photo-frame {
+  flex: none;
+
+  position: relative;
+
+  width: min(260px, 42vw);
+  height: min(340px, 55vw);
+
+  /* 위쪽은 둥글게(아치), 아래쪽은 살짝만 둥글게 — 목업 속 아치형
+     사진 프레임을 그대로 재현한다. overflow:hidden으로 실제 사진을
+     이 아치 모양 그대로 잘라낸다 */
+  overflow: hidden;
+  border-radius: 50% 50% 12px 12px / 42% 42% 8px 8px;
+
+  background: radial-gradient(
+    circle at 50% 38%,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(253, 232, 160, 0.65) 55%,
+    rgba(253, 232, 160, 0.35) 100%
+  );
+
+  box-shadow: 0 18px 40px rgba(120, 90, 30, 0.18);
+}
+
+.about-photo-img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  /* 사진 비율이 프레임과 정확히 같지 않아도 얼굴이 잘리지 않고
+     프레임을 꽉 채우도록 한다 */
+  object-fit: cover;
+  object-position: center 18%;
+}
+
+.about-intro-text {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  /* about.js가 글자 하나하나의 "원래 자리"를 계산할 때 이 요소를
+     기준(offsetParent)으로 삼는다 */
+  position: relative;
+}
+
+/* 화면에는 보이지 않지만 스크린리더는 읽을 수 있게 남겨두는
+   원래 문장. 아래 .intro-letters(시각적으로 쪼갠 글자들)는
+   aria-hidden이라 보조기술에서는 건너뛰고, 대신 이걸 읽는다 */
+.visually-hidden {
+  position: absolute !important;
+
+  width: 1px !important;
+  height: 1px !important;
+
+  padding: 0 !important;
+  margin: -1px !important;
+
+  overflow: hidden !important;
+
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+}
+
+/* 글자 하나하나. 평소엔 transform이 없어서(about.js가 커서를 감지하기
+   전) 원래 텍스트와 완전히 똑같이 보인다 — 커서가 가까이 오면
+   about.js가 매 프레임 transform만 바꿔서 부드럽게 밀어낸다 */
+.intro-letter {
+  display: inline-block;
+  will-change: transform;
+}
+
+.about-intro-title {
+  margin: 0 0 20px;
+
+  color: var(--about-accent);
+  font-family: var(--about-title-font);
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  letter-spacing: 0.06em;
+}
+
+.about-intro-text p {
+  margin: 0 0 16px;
+
+  color: rgba(30, 26, 18, 0.88);
+  font-family: var(--about-body-font);
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+/* 첫 문장("안녕하세요, 크리에이터 박선유입니다.")만 세미볼드로 살짝
+   힘을 준다 — 나머지 본문은 레귤러 그대로 */
+.about-intro-text p:first-of-type {
+  font-weight: 600;
+}
+
+.about-intro-text p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------------- Profile: 폴더 + 서류 ---------------- */
+.about-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-left: clamp(24px, 6vw, 64px);
+  padding-right: clamp(24px, 6vw, 64px);
+  padding-bottom: clamp(32px, 6vh, 64px);
+}
+
+.profile-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding-top: 40px;
+}
+
+/* 폴더+서류 그림 전체를 감싸는 상자. 서류 3장은 각각 독립된
+   <button>이라(키보드로 하나하나 Tab 이동해서 Enter로 열 수 있게),
+   폴더 자체는 버튼이 아니라 이 상자에 마우스를 올리거나(hover)
+   서류 중 하나에 키보드 포커스가 들어오면(focus-within) 다 같이
+   부채꼴로 펼쳐진다. 서류를 한 번 클릭하면 identity_focus.js가
+   is-open을 붙여서 펼쳐진 상태를 고정한다 */
+.profile-figure {
+  position: relative;
+
+  width: 220px;
+  height: 160px;
+
+  /* 아래 .profile-folder-front가 rotateX로 진짜 경첩처럼 뒤로
+     젖혀지는 입체감을 내려면, 3D를 그려낼 원근감을 부모가
+     제공해야 한다 */
+  perspective: 700px;
+}
+
+/* 서류(종이) 3장. 평소엔 폴더 위로 살짝만 삐져나온 흰 종이 모서리로
+   보이다가, 폴더를 열면(hover/focus-within 또는 is-open) 부채꼴로
+   펼쳐지며 색깔 라벨이 드러난다 */
+.profile-paper {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+
+  width: 118px;
+  height: 150px;
+
+  border: none;
+  padding: 0;
+  font: inherit;
+
+  background: #fdfdfb;
+  border-radius: 4px 14px 4px 4px;
+  box-shadow: 0 10px 20px rgba(60, 45, 20, 0.22);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+}
+
+/* 사이트 전역 button:hover(opacity:0.8)를 취소한다 — 펼쳐지면서
+   선명한 색 라벨을 보여주는 순간 흐려지면 역효과다. transform은
+   아래 .profile-figure:hover 규칙(더 높은 우선순위)이 항상
+   이기므로 따로 취소할 필요가 없다 */
+.profile-paper:hover {
+  opacity: 1;
+}
+
+.profile-paper--a {
+  transform: translate(-50%, 0) rotate(-14deg) translateY(6px);
+  z-index: 1;
+}
+
+.profile-paper--b {
+  transform: translate(-50%, 0) rotate(-2deg) translateY(-2px);
+  z-index: 2;
+}
+
+.profile-paper--c {
+  transform: translate(-50%, 0) rotate(12deg) translateY(6px);
+  z-index: 1;
+}
+
+.profile-figure.is-open .profile-paper--a,
+.profile-figure:hover .profile-paper--a,
+.profile-figure:focus-within .profile-paper--a {
+  transform: translate(calc(-50% - 92px), -46px) rotate(-20deg);
+}
+
+.profile-figure.is-open .profile-paper--b,
+.profile-figure:hover .profile-paper--b,
+.profile-figure:focus-within .profile-paper--b {
+  transform: translate(-50%, -66px) rotate(-3deg);
+}
+
+.profile-figure.is-open .profile-paper--c,
+.profile-figure:hover .profile-paper--c,
+.profile-figure:focus-within .profile-paper--c {
+  transform: translate(calc(-50% + 92px), -46px) rotate(20deg);
+}
+
+/* 부채꼴로 펼쳐진 상태에서, 그 중 한 장에 커서를 직접 올리면
+   "그 서류만 살짝 더 꺼내지는" 느낌을 주는 미세한 추가 반응.
+   과하지 않게 기존 펼침 위치에서 12px만 더 들어올린다.
+
+   주의: 셀렉터 명시도 때문에 그냥 `.profile-paper--a:hover`만
+   쓰면(클래스 2개 = 0,2,0) 바로 위 `.profile-figure:hover
+   .profile-paper--a`(클래스 3개 = 0,3,0)한테 항상 져서 이 규칙이
+   무시된다 — 조상 조건까지 셀렉터에 포함시켜 명시도를 4개(0,4,0)로
+   올려서 확실히 이기게 만든다 */
+.profile-figure:hover .profile-paper--a:hover,
+.profile-figure.is-open .profile-paper--a:hover,
+.profile-figure:focus-within .profile-paper--a:focus-visible {
+  transform: translate(calc(-50% - 92px), -58px) rotate(-20deg);
+  box-shadow: 0 16px 26px rgba(60, 45, 20, 0.3);
+}
+
+.profile-figure:hover .profile-paper--b:hover,
+.profile-figure.is-open .profile-paper--b:hover,
+.profile-figure:focus-within .profile-paper--b:focus-visible {
+  transform: translate(-50%, -78px) rotate(-3deg);
+  box-shadow: 0 16px 26px rgba(60, 45, 20, 0.3);
+}
+
+.profile-figure:hover .profile-paper--c:hover,
+.profile-figure.is-open .profile-paper--c:hover,
+.profile-figure:focus-within .profile-paper--c:focus-visible {
+  transform: translate(calc(-50% + 92px), -58px) rotate(20deg);
+  box-shadow: 0 16px 26px rgba(60, 45, 20, 0.3);
+}
+
+/* 서류 위를 가로지르는 색깔 띠(라벨). 평소엔 투명해서 안 보이다가
+   폴더가 열릴 때만 서서히 드러난다 */
+.profile-paper-tab {
+  position: absolute;
+  top: 44%;
+  left: -8%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 116%;
+  padding: 8px 4px;
+
+  transform: rotate(-6deg);
+
+  color: #fff;
+  font-family: sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+
+  opacity: 0;
+  transition: opacity 0.35s ease 0.15s;
+}
+
+.profile-figure.is-open .profile-paper-tab,
+.profile-figure:hover .profile-paper-tab,
+.profile-figure:focus-within .profile-paper-tab {
+  opacity: 1;
+}
+
+.profile-paper-tab--a {
+  background: var(--about-badge-a);
+}
+
+.profile-paper-tab--b {
+  background: var(--about-badge-b);
+}
+
+.profile-paper-tab--c {
+  background: var(--about-badge-c);
+}
+
+/* 폴더 뒤판. 항상 같은 자리에 고정되어 있고 사라지지도, 다른
+   그림으로 바뀌지도 않는다 — 종이(서류)가 그 안에서 나온다는
+   느낌을 주는 배경 역할만 한다. 종이보다 아래(z-index 낮음)에
+   깔려서 종이 밑동을 가려준다 */
+.profile-folder-back {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 0;
+
+  width: 190px;
+  height: 88px;
+
+  transform: translateX(-50%);
+
+  background: #eab255;
+  border-radius: 6px 6px 14px 14px;
+  box-shadow: inset 0 8px 14px rgba(120, 80, 20, 0.28);
+}
+
+/* 폴더 앞면(+탭). 평소엔 뒤판과 종이 아랫부분을 덮고 있다가,
+   열릴 때는 이미지로 바꿔치기하는 대신 아래쪽 경첩을 축으로
+   실제로 뒤로 젖혀진다(rotateX) — 종이가 그 아래에서 부채꼴로
+   펼쳐지는 것과 같은 시간(0.5s)/같은 감속 곡선을 써서 한 동작처럼
+   보이게 한다 */
+.profile-folder-front {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  z-index: 4;
+
+  width: 200px;
+  height: 100px;
+
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotateX(0deg);
+
+  background: #f8ce80;
+  border-radius: 6px 6px 14px 14px;
+  box-shadow: 0 12px 24px rgba(60, 45, 20, 0.28);
+
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s ease;
+}
+
+.profile-folder-tab {
+  position: absolute;
+  top: -14px;
+  left: 14px;
+
+  width: 64px;
+  height: 20px;
+
+  background: #f8ce80;
+  border-radius: 8px 8px 0 0;
+}
+
+/* 폴더가 열리면(hover/focus-within/is-open) 앞면이 경첩을 축으로
+   뒤로 젖혀지며 눕는다 — 진짜 폴더 뚜껑이 열리는 동작에 가깝다 */
+.profile-figure.is-open .profile-folder-front,
+.profile-figure:hover .profile-folder-front,
+.profile-figure:focus-within .profile-folder-front {
+  transform: translateX(-50%) rotateX(-62deg) translateY(4px);
+  box-shadow: 0 4px 10px rgba(60, 45, 20, 0.16);
+}
+
+.profile-label {
+  margin: 18px 0 0;
+
+  color: var(--about-accent);
+  font-family: var(--about-title-font);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+/* ---------------- Profile 상세 내용: 자체 풀스크린 페이지 ---------------- */
+/* 평소엔 display:none이라 스크롤 스냅 순서에 아예 끼지 않는다 —
+   서류를 눌러 is-visible이 붙는 순간에만 About Me/Profile/My
+   Message와 똑같은 자격으로 스냅 시퀀스에 들어와서 한 화면을
+   통째로 차지한다("각각 한 페이지씩 차지"). 내용이 한 화면보다
+   길어도(Experience 등) 이 페이지 자체의 높이는 100svh 그대로 두고
+   overflow-y:auto로 그 안에서만 스크롤되게 해서, 바깥 스크롤
+   시퀀스는 항상 깔끔하게 화면 단위로만 멈춘다 */
+.about-profile-detail {
+  display: none;
+
+  width: 100%;
+  height: 100svh;
+
+  box-sizing: border-box;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  padding-top: clamp(76px, 11svh, 108px);
+  padding-left: clamp(24px, 6vw, 64px);
+  padding-right: clamp(24px, 6vw, 64px);
+  padding-bottom: clamp(32px, 6vh, 64px);
+}
+
+.about-profile-detail.is-visible {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* 실제 "종이 한 장" 카드. 서류 버튼(.profile-paper)과 같은 재질감을
+   준다 — 반투명 카드 대신 불투명한 크림색 바탕에 아주 은은한 결
+   무늬와 종이 특유의 살짝 어긋난 모서리, 살짝 기운 각도로 책상 위에
+   놓인 종이처럼 보이게 한다 */
+.profile-detail-card {
+  width: min(760px, 92vw);
+  margin: auto 0;
+
+  position: relative;
+
+  padding: clamp(28px, 4vw, 40px) clamp(24px, 4vw, 36px);
+
+  background:
+    repeating-linear-gradient(
+      100deg,
+      rgba(120, 90, 40, 0.025) 0px,
+      rgba(120, 90, 40, 0.025) 1px,
+      transparent 1px,
+      transparent 5px
+    ),
+    #fdf9ef;
+  border-radius: 4px 20px 4px 4px;
+  box-shadow:
+    inset 0 0 0 1px rgba(120, 90, 40, 0.1),
+    0 3px 6px rgba(60, 45, 20, 0.1),
+    0 20px 40px rgba(60, 45, 20, 0.16);
+
+  transform: rotate(-0.35deg);
+}
+
+.profile-detail-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 40px;
+  min-height: 40px;
+
+  border: none;
+  background: none;
+
+  color: rgba(58, 42, 22, 0.6);
+  font-size: 1.3rem;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.profile-detail-close:hover,
+.profile-detail-close:focus-visible {
+  color: rgba(178, 58, 46, 0.92);
+  transform: translate(0, 0) rotate(90deg);
+}
+
+.profile-panel {
+  display: none;
+}
+
+.profile-panel.is-visible {
+  display: block;
+}
+
+.profile-badge {
+  display: inline-block;
+  margin: 0 0 20px;
+
+  padding: 10px 26px;
+
+  border-radius: 999px;
+
+  color: #fff;
+  font-family: sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.profile-badge--a {
+  background: var(--about-badge-a);
+}
+
+.profile-badge--b {
+  background: var(--about-badge-b);
+}
+
+.profile-badge--c {
+  background: var(--about-badge-c);
+}
+
+.profile-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px 40px;
+}
+
+.profile-column h3 {
+  margin: 0 0 10px;
+
+  padding-left: 12px;
+  border-left: 3px solid var(--about-accent);
+
+  color: var(--about-accent);
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.profile-column h3:not(:first-child) {
+  margin-top: 22px;
+}
+
+.profile-column p {
+  margin: 6px 0;
+
+  color: rgba(30, 26, 18, 0.82);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.profile-column ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+
+  color: rgba(30, 26, 18, 0.82);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.profile-column ul ul {
+  margin-top: 4px;
+  font-size: 0.86rem;
+  opacity: 0.9;
+}
+
+/* ---------------- My Message: 바이닐 ---------------- */
+.about-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-left: clamp(24px, 6vw, 64px);
+  padding-right: clamp(24px, 6vw, 64px);
+  padding-bottom: clamp(32px, 6vh, 64px);
+
+  text-align: center;
+}
+
+.about-message-title {
+  margin: 0 0 clamp(36px, 6vh, 64px);
+
+  color: var(--about-accent);
+  font-family: var(--about-title-font);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+}
+
+.vinyl-button {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: none;
+  padding: 0;
+
+  cursor: pointer;
+}
+
+/* 사이트 전역 button:hover(opacity:0.8)를 취소한다 — 바이닐이
+   "재생 중"으로 선명하게 보여야 하는 순간에 흐려지면 어색하다 */
+.vinyl-button:hover {
+  opacity: 1;
+}
+
+.vinyl-disc {
+  position: relative;
+
+  width: clamp(180px, 22vw, 260px);
+  height: clamp(180px, 22vw, 260px);
+
+  border-radius: 50%;
+
+  background:
+    repeating-radial-gradient(
+      circle,
+      #262220 0px,
+      #262220 3px,
+      #121110 4px,
+      #121110 6px
+    );
+
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+
+  transition: transform 0.2s ease;
+}
+
+.vinyl-groove {
+  position: absolute;
+  inset: 0;
+
+  border-radius: 50%;
+
+  /* 중심에서 바깥으로 은은하게 밝아지는 하이라이트를 얹어서 원반에
+     입체감을 준다 */
+  background: radial-gradient(
+    circle at 38% 32%,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0) 40%
+  );
+}
+
+.vinyl-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38%;
+  height: 38%;
+
+  border-radius: 50%;
+  border: 3px solid rgba(255, 253, 246, 0.9);
+
+  background: var(--about-accent);
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.vinyl-hole {
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+  background: #1a1512;
+}
+
+/* 좌우 사운드웨이브. 평소엔 안 보이다가 커서를 올리거나(hover)
+   눌러서 재생 상태(is-playing)가 되면 나타나며 잔잔히 움직인다 */
+.vinyl-wave {
+  width: clamp(90px, 16vw, 180px);
+  height: 64px;
+
+  margin: 0 -6px;
+
+  opacity: 0;
+  transform: scaleY(0.6);
+
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.vinyl-wave polyline {
+  fill: none;
+  stroke: rgba(45, 40, 31, 0.75);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.vinyl-button:hover .vinyl-wave,
+.vinyl-button.is-playing .vinyl-wave {
+  opacity: 1;
+  transform: scaleY(1);
+
+  animation: vinylWaveBounce 1.1s ease-in-out infinite;
+}
+
+.vinyl-button:hover .vinyl-disc,
+.vinyl-button.is-playing .vinyl-disc {
+  animation: vinylSpin 3.4s linear infinite;
+}
+
+@keyframes vinylWaveBounce {
+  0%,
+  100% {
+    transform: scaleY(0.85);
+  }
+
+  50% {
+    transform: scaleY(1.08);
+  }
+}
+
+@keyframes vinylSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.about-message-text {
+  max-width: 560px;
+  margin: clamp(28px, 5vh, 48px) 0 0;
+
+  color: rgba(30, 26, 18, 0.82);
+  font-size: 0.96rem;
+  line-height: 1.8;
+}
+
+/* ============================================================ */
+/* 모바일 대응                                                    */
+/* ============================================================ */
+@media (max-width: 760px) {
+  /* 좁고 짧은 화면에서는 한 화면(100svh) 안에 내용이 다 안 들어갈
+     수 있다 — overflow:hidden이면 안 보이는 채로 잘려버리니,
+     모바일에서만 안전하게 그 화면 안에서 세로 스크롤이 가능하도록
+     푼다(스냅 자체는 그대로 유지된다) */
+  .about-intro,
+  .about-profile,
+  .about-message {
+    overflow-y: auto;
+  }
+
+  .about-intro {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .about-photo-frame {
+    width: min(220px, 60vw);
+    height: min(280px, 76vw);
+  }
+
+  .profile-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-figure.is-open .profile-paper--a,
+  .profile-figure:hover .profile-paper--a,
+  .profile-figure:focus-within .profile-paper--a {
+    transform: translate(calc(-50% - 64px), -40px) rotate(-20deg);
+  }
+
+  .profile-figure.is-open .profile-paper--c,
+  .profile-figure:hover .profile-paper--c,
+  .profile-figure:focus-within .profile-paper--c {
+    transform: translate(calc(-50% + 64px), -40px) rotate(20deg);
+  }
+
+  /* 모바일용 펼침 위치가 데스크톱과 달라서(-40px), 개별 호버 추가
+     들어올림도 그 값 기준으로 다시 맞춘다 */
+  .profile-figure:hover .profile-paper--a:hover,
+  .profile-figure.is-open .profile-paper--a:hover,
+  .profile-figure:focus-within .profile-paper--a:focus-visible {
+    transform: translate(calc(-50% - 64px), -52px) rotate(-20deg);
+  }
+
+  .profile-figure:hover .profile-paper--c:hover,
+  .profile-figure.is-open .profile-paper--c:hover,
+  .profile-figure:focus-within .profile-paper--c:focus-visible {
+    transform: translate(calc(-50% + 64px), -52px) rotate(20deg);
+  }
+
+  .vinyl-wave {
+    width: clamp(60px, 20vw, 110px);
+  }
+
+  /* 좁은 화면에서는 서류/닫기 버튼의 터치 타겟을 넉넉히 확보한다 */
+  .profile-figure {
+    width: 190px;
+  }
+
+  .profile-detail-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
